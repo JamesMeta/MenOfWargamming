@@ -161,7 +161,7 @@ class Battle:
 
 class Country:
     
-    def __init__(self, country_name, country_tag, population, num_of_cities, production_coefficent, attrition_coefficent):
+    def __init__(self, country_name, country_tag, population, num_of_cities, production_coefficent, attrition_coefficent, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
         self.country_name = country_name
         self.country_tag = country_tag
         self.population = population
@@ -169,5 +169,119 @@ class Country:
         self.production_coefficent = production_coefficent
         self.attrition_coefficent = attrition_coefficent
         self.population_per_city = self.population // self.num_of_cities
-        self.infantry_divisions = []
-        self.armored_divisions = []
+
+        self.trained_men = self.population*0.01
+
+        self.infantry_divisions = {}
+        self.armored_divisions = {}
+
+
+        self.surplus_artillery = surplus_artillery
+        self.surplus_anti_tank = surplus_anti_tank
+        self.surplus_machine_guns = surplus_machine_guns
+        self.surplus_tanks = surplus_tanks
+        self.surplus_motorized = surplus_motorized
+
+        
+         
+
+    def get_country_name(self):
+        return self.country_name
+    
+    def get_country_tag(self):
+        return self.country_tag
+    
+    def get_population(self):
+        return self.population
+    
+    def get_num_of_cities(self):
+        return self.num_of_cities
+    
+    def get_production_coefficent(self):
+        return self.production_coefficent
+    
+    def get_attrition_coefficent(self):
+        return self.attrition_coefficent
+    
+    def get_population_per_city(self):
+        return self.population_per_city
+    
+    def set_country_name(self, country_name):
+        self.country_name = country_name
+
+    def set_country_tag(self, country_tag):
+        self.country_tag = country_tag
+    
+    def set_population(self, population):
+        if population > 0:
+            self.population = population
+        else:
+            self.population = 0
+    
+    def set_num_of_cities(self, num_of_cities):
+        if num_of_cities > 0:
+            self.num_of_cities = num_of_cities
+        else:
+            self.num_of_cities = 0
+    
+    def set_production_coefficent(self, production_coefficent):
+        if production_coefficent > 0:
+            self.production_coefficent = production_coefficent
+        else:
+            self.production_coefficent = 0
+    
+    def set_attrition_coefficent(self, attrition_coefficent):
+        if attrition_coefficent > 0:
+            self.attrition_coefficent = attrition_coefficent
+        else:
+            self.attrition_coefficent = 0
+    
+    def set_population_per_city(self, population_per_city):
+        if population_per_city > 0:
+            self.population_per_city = population_per_city
+        else:
+            self.population_per_city = 0
+
+    def find_avaliable_unit_number(self, unit_type):
+        if unit_type == "infantry":
+
+            for i in range(len(self.infantry_divisions)):
+                unit_number = i
+                if unit_number not in self.infantry_divisions:
+                    return unit_number
+            
+            return len(self.infantry_divisions)+1
+        
+        elif unit_type == "armored":
+
+            for i in range(len(self.armored_divisions)):
+                unit_number = i
+                if unit_number not in self.armored_divisions:
+                    return unit_number
+            
+            return len(self.armored_divisions)+1
+            
+    def view_unit(self,unit_number, unit_type):
+        if unit_type == "infantry":
+            return self.infantry_divisions[unit_number]
+        elif unit_type == "armored":
+            return self.armored_divisions[unit_number]
+
+    def spawn_infantry(self, veterancy):
+        unit_number = self.find_avaliable_unit_number("infantry")
+        self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy)
+        print(f"Spawned Infantry Division {unit_number} for {self.country_name}")
+    
+    def spawn_armored(self, veterancy):
+        unit_number = self.find_avaliable_unit_number("armored")
+        self.armored_divisions[unit_number] = Armored(unit_number, veterancy)
+        print(f"Spawned Armored Division {unit_number} for {self.country_name}")
+    
+    def delete_unit(self, unit_number, unit_type):
+        if unit_type == "infantry":
+            del self.infantry_divisions[unit_number]
+        elif unit_type == "armored":
+            del self.armored_divisions[unit_number]
+        
+        print(f"Deleted {unit_type} Division {unit_number} for {self.country_name}")
+
