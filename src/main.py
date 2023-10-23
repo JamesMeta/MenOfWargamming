@@ -8,7 +8,6 @@ class Infantry:
         self.anti_tank = 2
         self.veterancy = veterancy
         self.incirclement = False
-        self.unit_losses = 0
 
     def get_unit_number(self):
         return self.unit_number
@@ -30,9 +29,6 @@ class Infantry:
     
     def get_incirclement(self):
         return self.incirclement
-    
-    def get_unit_losses(self):
-        return self.unit_losses
     
     def set_unit_number(self, unit_number):
         if unit_number > 0:
@@ -73,8 +69,6 @@ class Infantry:
     def set_incirclement(self, incirclement):
         self.incirclement = incirclement
     
-    def sum_unit_losses(self, unit_losses):
-        self.unit_losses += unit_losses
     
 
 class Armored:
@@ -161,7 +155,7 @@ class Battle:
 
 class Country:
     
-    def __init__(self, country_name, country_tag, population, num_of_cities, production_coefficent, attrition_coefficent, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
+    def __init__(self, country_name, country_tag, population, trained_men, num_of_cities, production_coefficent, attrition_coefficent, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
         self.country_name = country_name
         self.country_tag = country_tag
         self.population = population
@@ -170,17 +164,23 @@ class Country:
         self.attrition_coefficent = attrition_coefficent
         self.population_per_city = self.population // self.num_of_cities
 
-        self.trained_men = self.population*0.01
+        self.trained_men = trained_men
 
         self.infantry_divisions = {}
         self.armored_divisions = {}
-
 
         self.surplus_artillery = surplus_artillery
         self.surplus_anti_tank = surplus_anti_tank
         self.surplus_machine_guns = surplus_machine_guns
         self.surplus_tanks = surplus_tanks
         self.surplus_motorized = surplus_motorized
+
+        self.manpower_losses = 0
+        self.artillery_losses = 0
+        self.anti_tank_losses = 0
+        self.machine_guns_losses = 0
+        self.tanks_losses = 0
+        self.motorized_losses = 0
 
         
          
@@ -206,6 +206,42 @@ class Country:
     def get_population_per_city(self):
         return self.population_per_city
     
+    def get_manpower_losses(self):
+        return self.manpower_losses
+    
+    def get_artillery_losses(self):
+        return self.artillery_losses
+    
+    def get_anti_tank_losses(self):
+        return self.anti_tank_losses
+    
+    def get_machine_guns_losses(self):
+        return self.machine_guns_losses
+    
+    def get_tanks_losses(self):
+        return self.tanks_losses
+    
+    def get_motorized_losses(self):
+        return self.motorized_losses
+
+    def get_surplus_artillery(self):
+        return self.surplus_artillery
+    
+    def get_surplus_anti_tank(self):
+        return self.surplus_anti_tank
+    
+    def get_surplus_machine_guns(self):
+        return self.surplus_machine_guns
+    
+    def get_surplus_tanks(self):
+        return self.surplus_tanks
+    
+    def get_surplus_motorized(self):
+        return self.surplus_motorized
+    
+    def get_trained_men(self):
+        return self.trained_men
+
     def set_country_name(self, country_name):
         self.country_name = country_name
 
@@ -261,6 +297,7 @@ class Country:
             
             return len(self.armored_divisions)+1
             
+    ##TODO: Correct function to print instead of return
     def view_unit(self,unit_number, unit_type):
         if unit_type == "infantry":
             return self.infantry_divisions[unit_number]
@@ -285,3 +322,67 @@ class Country:
         
         print(f"Deleted {unit_type} Division {unit_number} for {self.country_name}")
 
+    #remaining equipment list structure [men, artillery, machine_guns, anti_tank, tanks, motorized]
+    def take_casualties(self, unit_number, unit_type, remaining_equipment_list):
+        if unit_type == "infantry":
+
+            unit = self.infantry_divisions[unit_number]
+
+            previous_manpower = unit.get_manpower()
+            previous_artillery = unit.get_artillery()
+            previous_anti_tank = unit.get_anti_tank()
+            previous_machine_guns = unit.get_machine_guns()
+
+            current_manpower = remaining_equipment_list[0]
+            current_artillery = remaining_equipment_list[1]
+            current_machine_guns = remaining_equipment_list[2]
+            current_anti_tank = remaining_equipment_list[3]
+
+            self.manpower_losses+= previous_manpower - current_manpower
+            self.anti_tank_losses+= previous_anti_tank - current_anti_tank
+            self.artillery_losses+= previous_artillery - current_artillery
+            self.machine_guns_losses+= previous_machine_guns - current_machine_guns
+
+            self.population -= previous_manpower - current_manpower
+
+            unit.set_manpower(current_manpower)
+            unit.set_artillery(current_artillery)
+            unit.set_anti_tank(current_anti_tank)
+            unit.set_machine_guns(current_machine_guns)
+
+            if unit.get_manpower() == 0:
+                self.delete_unit(unit_number, unit_type)
+
+        elif unit_type == "armored":
+            
+            unit = self.armored_divisions[unit_number]
+
+            previous_manpower = unit.get_manpower()
+            previous_tanks = unit.get_tanks()
+            previous_motorized = unit.get_motorized()
+
+            current_manpower = remaining_equipment_list[0]
+            current_tanks = remaining_equipment_list[4]
+            current_motorized = remaining_equipment_list[5]
+
+            self.manpower_losses+= previous_manpower - current_manpower
+            self.tanks_losses+= previous_tanks - current_tanks
+            self.motorized_losses+= previous_motorized - current_motorized
+
+            self.population -= previous_manpower - current_manpower
+
+            unit.set_manpower(current_manpower)
+            unit.set_tanks(current_tanks)
+            unit.set_motorized(current_motorized)
+
+            if unit.get_manpower() == 0:
+                self.delete_unit(unit_number, unit_type)
+
+    def change_unit_status(self, unit_number, unit_type):
+        if unit_type == "infantry":
+            unit = self.infantry_divisions[unit_number]
+            unit.set_incirclement(not unit.get_incirclement())
+        elif unit_type == "armored":
+            unit = self.armored_divisions[unit_number]
+            unit.set_incirclement(not unit.get_incirclement())
+    
