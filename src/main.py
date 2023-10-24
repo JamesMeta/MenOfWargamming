@@ -155,15 +155,18 @@ class Battle:
 
 class Country:
     
-    def __init__(self, country_name, country_tag, population, trained_men, num_of_cities, production_coefficent, attrition_coefficent, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
+    def __init__(self, country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
         self.country_name = country_name
         self.country_tag = country_tag
         self.population = population
         self.num_of_cities = num_of_cities
-        self.production_coefficent = production_coefficent
-        self.attrition_coefficent = attrition_coefficent
+        self.production_coefficient = production_coefficient
+        self.attrition_coefficient = attrition_coefficient
         self.population_per_city = self.population // self.num_of_cities
 
+        self.conscription_law = conscription_law
+
+        self.eligible_men = self.population * self.conscription_law
         self.trained_men = trained_men
 
         self.infantry_divisions = {}
@@ -188,6 +191,9 @@ class Country:
     def get_country_name(self):
         return self.country_name
     
+    def get_conscription_law(self):
+        return self.conscription_law
+
     def get_country_tag(self):
         return self.country_tag
     
@@ -197,11 +203,11 @@ class Country:
     def get_num_of_cities(self):
         return self.num_of_cities
     
-    def get_production_coefficent(self):
-        return self.production_coefficent
+    def get_production_coefficient(self):
+        return self.production_coefficient
     
-    def get_attrition_coefficent(self):
-        return self.attrition_coefficent
+    def get_attrition_coefficient(self):
+        return self.attrition_coefficient
     
     def get_population_per_city(self):
         return self.population_per_city
@@ -254,23 +260,29 @@ class Country:
         else:
             self.population = 0
     
+    def set_consription_law(self, conscription_law):
+        if conscription_law >= 0 and conscription_law <= 5:
+            self.conscription_law = conscription_law
+        else:
+            self.conscription_law = 0
+
     def set_num_of_cities(self, num_of_cities):
         if num_of_cities > 0:
             self.num_of_cities = num_of_cities
         else:
             self.num_of_cities = 0
     
-    def set_production_coefficent(self, production_coefficent):
-        if production_coefficent > 0:
-            self.production_coefficent = production_coefficent
+    def set_production_coefficient(self, production_coefficient):
+        if production_coefficient > 0:
+            self.production_coefficient = production_coefficient
         else:
-            self.production_coefficent = 0
+            self.production_coefficient = 0
     
-    def set_attrition_coefficent(self, attrition_coefficent):
-        if attrition_coefficent > 0:
-            self.attrition_coefficent = attrition_coefficent
+    def set_attrition_coefficient(self, attrition_coefficient):
+        if attrition_coefficient > 0:
+            self.attrition_coefficient = attrition_coefficient
         else:
-            self.attrition_coefficent = 0
+            self.attrition_coefficient = 0
     
     def set_population_per_city(self, population_per_city):
         if population_per_city > 0:
@@ -297,8 +309,7 @@ class Country:
             
             return len(self.armored_divisions)+1
             
-    ##TODO: Correct function to print instead of return
-    def view_unit(self,unit_number, unit_type):
+    def get_unit(self,unit_number, unit_type):
         if unit_type == "infantry":
             return self.infantry_divisions[unit_number]
         elif unit_type == "armored":
@@ -386,3 +397,43 @@ class Country:
             unit = self.armored_divisions[unit_number]
             unit.set_incirclement(not unit.get_incirclement())
     
+    def understrength_units_exist(self, unit_type):
+        if unit_type == "infantry":
+            for unit_number in self.infantry_divisions:
+                if self.infantry_divisions[unit_number].get_manpower() < 100:
+                    return True
+            return False
+        elif unit_type == "armored":
+            for unit_number in self.armored_divisions:
+                if self.armored_divisions[unit_number].get_manpower() < 60:
+                    return True
+            return False
+
+    def resupply_all_units(self):
+
+        replacement_manpower = self.trained_men
+        self.trained_men = 0
+
+        guaranteed_infantry_replacements = round(replacement_manpower * 0.25)
+
+        while replacement_manpower > 0 and self.understrength_units_exist("armored"):
+            for unit in self.armored_divisions:
+                if unit.get_manpower() < 60:
+                    unit.set_manpower(unit.get_manpower()+1)
+                    replacement_manpower -= 1
+        
+        replacement_manpower += guaranteed_infantry_replacements
+
+        while replacement_manpower > 0 and self.understrength_units_exist("infantry"):
+            for unit in self.infantry_divisions:
+                if unit.get_manpower() < 100:
+                    unit.set_manpower(unit.get_manpower()+1)
+                    replacement_manpower -= 1
+
+        self.trained_men = replacement_manpower
+        
+        #TODO: resupply equipment for all units
+
+
+    def next_turn():
+        pass
