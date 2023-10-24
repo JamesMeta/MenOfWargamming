@@ -1,3 +1,5 @@
+import random
+
 class Infantry:
 
     def __init__(self, unit_number, veterancy):
@@ -184,6 +186,8 @@ class Country:
         self.machine_guns_losses = 0
         self.tanks_losses = 0
         self.motorized_losses = 0
+
+        self.internal_round_counter = 0
 
         
          
@@ -412,7 +416,18 @@ class Country:
     def resupply_all_units(self):
 
         replacement_manpower = self.trained_men
+        replacement_artillery = self.surplus_artillery
+        replacement_anti_tank = self.surplus_anti_tank
+        replacement_machine_guns = self.surplus_machine_guns
+        replacement_tanks = self.surplus_tanks
+        replacement_motorized = self.surplus_motorized
+
         self.trained_men = 0
+        self.surplus_artillery = 0
+        self.surplus_anti_tank = 0
+        self.surplus_machine_guns = 0
+        self.surplus_tanks = 0
+        self.surplus_motorized = 0
 
         guaranteed_infantry_replacements = round(replacement_manpower * 0.25)
 
@@ -421,6 +436,14 @@ class Country:
                 if unit.get_manpower() < 60:
                     unit.set_manpower(unit.get_manpower()+1)
                     replacement_manpower -= 1
+
+                if unit.get_tanks() < 6:
+                    unit.set_tanks(unit.get_tanks()+1)
+                    replacement_tanks -= 1
+
+                if unit.get_motorized() < 5:
+                    unit.set_motorized(unit.get_motorized()+1)
+                    replacement_motorized -= 1
         
         replacement_manpower += guaranteed_infantry_replacements
 
@@ -429,11 +452,110 @@ class Country:
                 if unit.get_manpower() < 100:
                     unit.set_manpower(unit.get_manpower()+1)
                     replacement_manpower -= 1
+                
+                if unit.get_artillery() < 3:
+                    unit.set_artillery(unit.get_artillery()+1)
+                    replacement_artillery -= 1
+
+                if unit.get_machine_guns() < 2:
+                    unit.set_machine_guns(unit.get_machine_guns()+1)
+                    replacement_machine_guns -= 1
+                
+                if unit.get_anti_tank() < 2:
+                    unit.set_anti_tank(unit.get_anti_tank()+1)
+                    replacement_anti_tank -= 1
 
         self.trained_men = replacement_manpower
+        self.surplus_artillery = replacement_artillery
+        self.surplus_anti_tank = replacement_anti_tank
+        self.surplus_machine_guns = replacement_machine_guns
+        self.surplus_tanks = replacement_tanks
+        self.surplus_motorized = replacement_motorized
+
+    def take_attrition(self):
         
-        #TODO: resupply equipment for all units
+        for unit in self.infantry_divisions:
+            random_number = random.randint(1,(1-self.attrition_coefficient)*100)
+            if random_number > 20:
+                random_number = random.randint(1,10)
+                if random_number<2:
+                    unit.set_artillery(unit.get_artillery()-1)
+                    unit.set_machine_guns(unit.get_machine_guns()-1)
+                    unit.set_anti_tank(unit.get_anti_tank()-1)
 
+                    self.artillery_losses+=1
+                    self.machine_guns_losses+=1
+                    self.anti_tank_losses+=1
+                
+                elif random_number<4 and random_number >=2:
+                    unit.set_artillery(unit.get_artillery()-1)
+                    unit.set_anti_tank(unit.get_anti_tank()-1)
 
-    def next_turn():
-        pass
+                    self.artillery_losses+=1
+                    self.anti_tank_losses+=1
+                
+                elif random_number<6 and random_number >=4:
+                    unit.set_artillery(unit.get_artillery()-1)
+                    unit.set_machine_guns(unit.get_machine_guns()-1)
+
+                    self.artillery_losses+=1
+                    self.machine_guns_losses+=1
+
+                elif random_number<8 and random_number >=6:
+                    unit.set_artillery(unit.get_artillery()-1)
+
+                    self.artillery_losses+=1
+
+                elif random_number<10 and random_number >=8:
+                    pass
+        
+        for unit in self.armored_divisions:
+            random_number = random.randint(1,(1-self.attrition_coefficient)*100)
+            if random_number > 20:
+                random_number = random.randint(1,10)
+                if random_number<2:
+                    unit.set_tanks(unit.get_tanks()-2)
+                    unit.set_motorized(unit.get_motorized()-2)
+
+                    self.tanks_losses+=2
+                    self.motorized_losses+=2
+                
+                elif random_number<4 and random_number >=2:
+                    unit.set_tanks(unit.get_tanks()-2)
+                    unit.set_motorized(unit.get_motorized()-1)
+
+                    self.tanks_losses+=2
+                    self.motorized_losses+=1
+                
+                elif random_number<6 and random_number >=4:
+                    unit.set_tanks(unit.get_tanks()-1)
+                    unit.set_motorized(unit.get_motorized()-1)
+
+                    self.tanks_losses+=1
+                    self.motorized_losses+=1
+
+                elif random_number<8 and random_number >=6:
+                    unit.set_tanks(unit.get_tanks()-1)
+
+                    self.tanks_losses+=1
+
+                elif random_number<10 and random_number >=8:
+                    pass
+
+    ##TODO: Calculate a balanced production quantity and production coefficent for each country
+    def run_production(self):
+        self.surplus_artillery += self.population_per_city * self.production_coefficient
+        self.surplus_anti_tank += self.population_per_city * self.production_coefficient
+        self.surplus_machine_guns += self.population_per_city * self.production_coefficient
+        self.surplus_tanks += self.population_per_city * self.production_coefficient
+        self.surplus_motorized += self.population_per_city * self.production_coefficient                
+
+    def next_turn(self):
+
+        self.internal_round_counter += 1
+
+        self.take_attrition()
+        self.run_production()
+
+        if self.internal_round_counter % 2 == 0:
+            self.resupply_all_units()
