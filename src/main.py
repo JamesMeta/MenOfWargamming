@@ -70,6 +70,9 @@ class Infantry:
     
     def set_incirclement(self, incirclement):
         self.incirclement = incirclement
+
+    def __str__(self):
+        return f"Infantry Division {self.unit_number} \nManpower: {self.manpower} \nArtillery: {self.artillery} \nMachine Guns: {self.machine_guns} \nAnti Tank: {self.anti_tank} \nVeterancy: {self.veterancy} \nIncirclement: {self.incirclement}"
     
     
 
@@ -188,9 +191,6 @@ class Country:
         self.motorized_losses = 0
 
         self.internal_round_counter = 0
-
-        
-         
 
     def get_country_name(self):
         return self.country_name
@@ -404,14 +404,45 @@ class Country:
     def understrength_units_exist(self, unit_type):
         if unit_type == "infantry":
             for unit_number in self.infantry_divisions:
-                if self.infantry_divisions[unit_number].get_manpower() < 100:
+                if self.infantry_divisions[unit_number].get_manpower() < 100 or self.infantry_divisions[unit_number].get_artillery() < 3 or self.infantry_divisions[unit_number].get_machine_guns() < 2 or self.infantry_divisions[unit_number].get_anti_tank() < 2:
                     return True
             return False
         elif unit_type == "armored":
             for unit_number in self.armored_divisions:
-                if self.armored_divisions[unit_number].get_manpower() < 60:
+                if self.armored_divisions[unit_number].get_manpower() < 60 or self.armored_divisions[unit_number].get_tanks() < 6 or self.armored_divisions[unit_number].get_motorized() < 5:
                     return True
             return False
+
+    def resupply_is_possible(self, men, artillery, anti_tank, machine_gun, tanks, motorized):
+        men_gap = 0
+        artillery_gap = 0
+        anti_tank_gap = 0
+        machine_gun_gap = 0
+        tanks_gap = 0
+        motorized_gap = 0
+
+        for unit in self.infantry_divisions.values():
+            if unit.get_incirclement() == False:
+                men_gap += 100 - unit.get_manpower()
+                artillery_gap += 3 - unit.get_artillery()
+                anti_tank_gap += 2 - unit.get_anti_tank()
+                machine_gun_gap += 2 - unit.get_machine_guns()
+        
+        for unit in self.armored_divisions.values():
+            if unit.get_incirclement() == False:
+                men_gap += 60 - unit.get_manpower()
+                tanks_gap += 6 - unit.get_tanks()
+                motorized_gap += 5 - unit.get_motorized()
+
+        if (men_gap>0 and men>0) or (artillery_gap>0 and artillery>0) or (anti_tank_gap>0 and anti_tank>0) or (machine_gun_gap>0 and machine_gun>0) or (tanks_gap>0 and tanks>0) or (motorized_gap>0 and motorized>0):
+            return True
+        
+        else:
+            return False
+
+        
+        
+       
 
     def resupply_all_units(self):
 
@@ -431,39 +462,41 @@ class Country:
 
         guaranteed_infantry_replacements = round(replacement_manpower * 0.25)
 
-        while replacement_manpower > 0 and self.understrength_units_exist("armored"):
-            for unit in self.armored_divisions:
-                if unit.get_manpower() < 60:
-                    unit.set_manpower(unit.get_manpower()+1)
-                    replacement_manpower -= 1
+        while self.understrength_units_exist("armored") and self.resupply_is_possible(replacement_manpower,replacement_artillery, replacement_anti_tank, replacement_machine_guns, replacement_tanks, replacement_motorized):
+            for unit in self.armored_divisions.values():
+                if unit.get_incirclement() == False:
+                    if unit.get_manpower() < 60:
+                        unit.set_manpower(unit.get_manpower()+1)
+                        replacement_manpower -= 1
 
-                if unit.get_tanks() < 6:
-                    unit.set_tanks(unit.get_tanks()+1)
-                    replacement_tanks -= 1
+                    if unit.get_tanks() < 6:
+                        unit.set_tanks(unit.get_tanks()+1)
+                        replacement_tanks -= 1
 
-                if unit.get_motorized() < 5:
-                    unit.set_motorized(unit.get_motorized()+1)
-                    replacement_motorized -= 1
+                    if unit.get_motorized() < 5:
+                        unit.set_motorized(unit.get_motorized()+1)
+                        replacement_motorized -= 1
         
         replacement_manpower += guaranteed_infantry_replacements
 
         while replacement_manpower > 0 and self.understrength_units_exist("infantry"):
-            for unit in self.infantry_divisions:
-                if unit.get_manpower() < 100:
-                    unit.set_manpower(unit.get_manpower()+1)
-                    replacement_manpower -= 1
-                
-                if unit.get_artillery() < 3:
-                    unit.set_artillery(unit.get_artillery()+1)
-                    replacement_artillery -= 1
+            for unit in self.infantry_divisions.values():
+                if unit.get_incirclement() == False:
+                    if unit.get_manpower() < 100:
+                        unit.set_manpower(unit.get_manpower()+1)
+                        replacement_manpower -= 1
+                    
+                    if unit.get_artillery() < 3:
+                        unit.set_artillery(unit.get_artillery()+1)
+                        replacement_artillery -= 1
 
-                if unit.get_machine_guns() < 2:
-                    unit.set_machine_guns(unit.get_machine_guns()+1)
-                    replacement_machine_guns -= 1
-                
-                if unit.get_anti_tank() < 2:
-                    unit.set_anti_tank(unit.get_anti_tank()+1)
-                    replacement_anti_tank -= 1
+                    if unit.get_machine_guns() < 2:
+                        unit.set_machine_guns(unit.get_machine_guns()+1)
+                        replacement_machine_guns -= 1
+                    
+                    if unit.get_anti_tank() < 2:
+                        unit.set_anti_tank(unit.get_anti_tank()+1)
+                        replacement_anti_tank -= 1
 
         self.trained_men = replacement_manpower
         self.surplus_artillery = replacement_artillery
@@ -474,8 +507,8 @@ class Country:
 
     def take_attrition(self):
         
-        for unit in self.infantry_divisions:
-            random_number = random.randint(1,(1-self.attrition_coefficient)*100)
+        for unit in self.infantry_divisions.values():
+            random_number = random.randint(1,round((1-self.attrition_coefficient)*100))
             if random_number > 20:
                 random_number = random.randint(1,10)
                 if random_number<2:
@@ -488,10 +521,10 @@ class Country:
                     self.anti_tank_losses+=1
                 
                 elif random_number<4 and random_number >=2:
-                    unit.set_artillery(unit.get_artillery()-1)
+                    unit.set_machine_guns(unit.get_machine_guns()-1)
                     unit.set_anti_tank(unit.get_anti_tank()-1)
 
-                    self.artillery_losses+=1
+                    self.machine_guns_losses+=1
                     self.anti_tank_losses+=1
                 
                 elif random_number<6 and random_number >=4:
@@ -509,8 +542,8 @@ class Country:
                 elif random_number<10 and random_number >=8:
                     pass
         
-        for unit in self.armored_divisions:
-            random_number = random.randint(1,(1-self.attrition_coefficient)*100)
+        for unit in self.armored_divisions.values():
+            random_number = random.randint(1,round((1-self.attrition_coefficient)*100))
             if random_number > 20:
                 random_number = random.randint(1,10)
                 if random_number<2:
@@ -544,11 +577,11 @@ class Country:
 
     ##TODO: Calculate a balanced production quantity and production coefficent for each country
     def run_production(self):
-        self.surplus_artillery += self.population_per_city * self.production_coefficient
-        self.surplus_anti_tank += self.population_per_city * self.production_coefficient
-        self.surplus_machine_guns += self.population_per_city * self.production_coefficient
-        self.surplus_tanks += self.population_per_city * self.production_coefficient
-        self.surplus_motorized += self.population_per_city * self.production_coefficient                
+        self.surplus_artillery += 1
+        self.surplus_anti_tank += 1
+        self.surplus_machine_guns += 1
+        self.surplus_tanks += 1
+        self.surplus_motorized += 1            
 
     def next_turn(self):
 
