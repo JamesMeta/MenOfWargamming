@@ -157,7 +157,7 @@ class Battle:
     def __str__(self):
         return f"{self.battle_name} \nWinner: {self.winner} \nAttacker: {self.attacker} \nDefender: {self.defender} \nAttacker Losses: {self.attacker_losses} \nDefender Losses: {self.defender_losses}"
     
-
+##TODO: Add Training
 class Country:
     
     def __init__(self, country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
@@ -440,10 +440,6 @@ class Country:
         else:
             return False
 
-        
-        
-       
-
     def resupply_all_units(self):
 
         replacement_manpower = self.trained_men
@@ -509,7 +505,7 @@ class Country:
         
         for unit in self.infantry_divisions.values():
             random_number = random.randint(1,round((1-self.attrition_coefficient)*100))
-            if random_number > 20:
+            if random_number > 60:
                 random_number = random.randint(1,10)
                 if random_number<2:
                     unit.set_artillery(unit.get_artillery()-1)
@@ -544,7 +540,7 @@ class Country:
         
         for unit in self.armored_divisions.values():
             random_number = random.randint(1,round((1-self.attrition_coefficient)*100))
-            if random_number > 20:
+            if random_number > 60:
                 random_number = random.randint(1,10)
                 if random_number<2:
                     unit.set_tanks(unit.get_tanks()-2)
@@ -575,13 +571,13 @@ class Country:
                 elif random_number<10 and random_number >=8:
                     pass
 
-    ##TODO: Calculate a balanced production quantity and production coefficent for each country
     def run_production(self):
-        self.surplus_artillery += 1
-        self.surplus_anti_tank += 1
-        self.surplus_machine_guns += 1
-        self.surplus_tanks += 1
-        self.surplus_motorized += 1            
+        random_number = random.randint(1,3)
+        self.surplus_artillery += round(23 * self.population * self.production_coefficient * self.num_of_cities) * random_number
+        self.surplus_anti_tank += round(18 * self.population * self.production_coefficient * self.num_of_cities) * random_number
+        self.surplus_machine_guns += round(26 * self.population * self.production_coefficient * self.num_of_cities) * random_number
+        self.surplus_tanks += round(13 * self.population * self.production_coefficient * self.num_of_cities) * random_number
+        self.surplus_motorized += round(9 * self.population * self.production_coefficient * self.num_of_cities) * random_number            
 
     def next_turn(self):
 
