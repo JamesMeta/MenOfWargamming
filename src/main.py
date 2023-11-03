@@ -1,4 +1,5 @@
 import random
+import matplotlib.pyplot as plt
 
 class Infantry:
 
@@ -143,12 +144,14 @@ class Armored:
 
 class Statistics:
 
-    def __init__(self):
+    def __init__(self, country_map):
         
         self.total_battles = 0
         self.total_losses = 0
 
         self.battle_list = []
+        self.country_map = country_map
+        self.country_losses_map = {}
     
     def get_total_battles(self):
         return self.total_battles
@@ -160,6 +163,24 @@ class Statistics:
         self.battle_list.append(battle)
         self.total_battles += 1
         self.total_losses += battle.get_total_losses()
+
+    ##TODO:
+    def graph_losses_for_country(self, country_tag):
+        pass
+
+    ##TODO:
+    def graph_losses_for_all_countries(self):
+        pass
+
+    ##TODO:
+    def graph_stockpile_for_country(self, country_tag):
+        pass
+
+    ##TODO:
+    def graph_stockpile_for_all_countries(self):
+        pass
+
+            
 
 class Battle:
 
@@ -627,10 +648,10 @@ class Country:
         if self.internal_round_counter % 2 == 0:
             self.resupply_all_units()
 
-class Interface:
+class World:
     def __init__(self):
-        self.statistics = Statistics()
-        self.country_list = []
+        self.country_map = {}
+        self.statistics = None
 
     def start_game(self):
         print("Welcome to the game!")
@@ -646,9 +667,34 @@ class Interface:
             self.create_country("Romania", "ROM", 200000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
             self.create_country("Hungary", "HUN", 100000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
             self.create_country("Soviet Union", "SOV", 1700000, 10000, 0.05, 29, 0.000000025, 0.0, 400, 320, 480, 240, 160)
+            self.create_statistics()
+        else:
+            print("Custom setup not implemented yet!")
     
     def create_country(self, country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
         country = Country(country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized)
-        self.country_list.append(country)
+        self.country_map[country_tag] = country
+
+    def create_statistics(self):
+        statistics = Statistics(self.country_map)
+        self.statistics = statistics
+    
+    ##TODO:
+    def start_battle(self):
+        pass
+
+    ##TODO:
+    def enter_country_menu(self, country_tag):
+        pass
+
+    ##TODO:
+    def enter_statistics_menu(self):
+        pass
+
+    ##TODO:
+    def next_turn(self):
+        pass
+
+
 
     
