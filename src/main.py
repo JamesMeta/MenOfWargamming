@@ -73,9 +73,7 @@ class Infantry:
 
     def __str__(self):
         return f"Infantry Division {self.unit_number} \nManpower: {self.manpower} \nArtillery: {self.artillery} \nMachine Guns: {self.machine_guns} \nAnti Tank: {self.anti_tank} \nVeterancy: {self.veterancy} \nIncirclement: {self.incirclement}"
-    
-    
-
+      
 class Armored:
     def __init__(self, unit_number, veterancy):
         self.unit_number = unit_number
@@ -143,6 +141,25 @@ class Armored:
     def sum_unit_losses(self, unit_losses):
         self.unit_losses += unit_losses
 
+class Statistics:
+
+    def __init__(self):
+        
+        self.total_battles = 0
+        self.total_losses = 0
+
+        self.battle_list = []
+    
+    def get_total_battles(self):
+        return self.total_battles
+    
+    def get_total_losses(self):
+        return self.total_losses
+    
+    def add_battle(self, battle):
+        self.battle_list.append(battle)
+        self.total_battles += 1
+        self.total_losses += battle.get_total_losses()
 
 class Battle:
 
@@ -154,12 +171,14 @@ class Battle:
         self.attacker_losses = 0
         self.defender_losses = 0
 
+    def get_total_losses(self):
+        return self.attacker_losses + self.defender_losses
+
     def __str__(self):
         return f"{self.battle_name} \nWinner: {self.winner} \nAttacker: {self.attacker} \nDefender: {self.defender} \nAttacker Losses: {self.attacker_losses} \nDefender Losses: {self.defender_losses}"
     
-##TODO: Add Training
 class Country:
-    
+ 
     def __init__(self, country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
         self.country_name = country_name
         self.country_tag = country_tag
@@ -501,6 +520,24 @@ class Country:
         self.surplus_tanks = replacement_tanks
         self.surplus_motorized = replacement_motorized
 
+    def find_army_size(self):
+        army_size = 0
+        for unit in self.infantry_divisions.values():
+            army_size += unit.get_manpower()
+        for unit in self.armored_divisions.values():
+            army_size += unit.get_manpower()
+        return army_size
+
+    def train_men(self):
+        army_size = self.find_army_size()
+        new_trainees = round(army_size/208)
+        if new_trainees>self.eligible_men:
+            print(f"Manpower pool dry for {self.country_name}")
+            new_trainees=self.eligible_men
+        
+        self.eligible_men -= new_trainees
+        self.population -= new_trainees
+
     def take_attrition(self):
         
         for unit in self.infantry_divisions.values():
@@ -573,18 +610,45 @@ class Country:
 
     def run_production(self):
         random_number = random.randint(1,3)
-        self.surplus_artillery += round(23 * self.population * self.production_coefficient * self.num_of_cities) * random_number
-        self.surplus_anti_tank += round(18 * self.population * self.production_coefficient * self.num_of_cities) * random_number
-        self.surplus_machine_guns += round(26 * self.population * self.production_coefficient * self.num_of_cities) * random_number
-        self.surplus_tanks += round(13 * self.population * self.production_coefficient * self.num_of_cities) * random_number
-        self.surplus_motorized += round(9 * self.population * self.production_coefficient * self.num_of_cities) * random_number            
+        self.surplus_artillery += round(24 * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
+        self.surplus_anti_tank += round(19 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_machine_guns += round(27 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_tanks += round(14 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_motorized += round(10 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
 
     def next_turn(self):
 
         self.internal_round_counter += 1
 
         self.take_attrition()
+        self.train_men()
         self.run_production()
 
         if self.internal_round_counter % 2 == 0:
             self.resupply_all_units()
+
+class Interface:
+    def __init__(self):
+        self.statistics = Statistics()
+        self.country_list = []
+
+    def start_game(self):
+        print("Welcome to the game!")
+        print("This calculator has a default setup and a custom setup.")
+        setup=input("Enter D for default setup or C for custom setup: ")
+        if setup == "D":
+            self.create_country("United Kingdom", "ENG", 607600, 2000, 0.015, 20, 0.000000035, 0.25, 120, 95, 135, 70, 50)
+            self.create_country("France", "FRA", 420000, 3000, 0.025, 26, 0.00000003, 0.1, 100, 80, 120, 60, 40)
+            self.create_country("United States", "USA", 1310000, 300, 0.005, 31, 0.000000025, 0.0, 200, 160, 240, 120, 80)
+            self.create_country("Netherlands", "HOL", 170000, 800, 0.025, 9, 0.000000020, 0.2, 40, 32, 48, 24, 16)
+            self.create_country("Germany", "GER", 690000, 4000, 0.05, 34, 0.000000030, 0.2, 160, 128, 192, 96, 64)
+            self.create_country("Italy", "ITA", 440000, 1000, 0.05, 27, 0.00000002, 0.2, 80, 64, 96, 48, 32)
+            self.create_country("Romania", "ROM", 200000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
+            self.create_country("Hungary", "HUN", 100000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
+            self.create_country("Soviet Union", "SOV", 1700000, 10000, 0.05, 29, 0.000000025, 0.0, 400, 320, 480, 240, 160)
+    
+    def create_country(self, country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
+        country = Country(country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized)
+        self.country_list.append(country)
+
+    

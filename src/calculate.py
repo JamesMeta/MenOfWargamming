@@ -31,7 +31,7 @@ for i in range(simulations):
 
 plt.plot(country1, color='black')
 
-country = Country("Soviet", "SOV", 1685240, 1000, 0.01, 34, 0.000000025, 0.0, 0, 0, 0, 0, 0)
+country = Country("Soviet", "SOV", 1685240, 1000, 0.01, 29, 0.000000025, 0.0, 0, 0, 0, 0, 0)
 
 for i in range(199):
         country.spawn_infantry(1)
@@ -50,7 +50,7 @@ for i in range(simulations):
 
 plt.plot(country2, color='red')
 
-country = Country("UK", "ENG", 477600, 1000, 0.04, 34, 0.000000035, 0.25, 0, 0, 0, 0, 0)
+country = Country("UK", "ENG", 477600, 1000, 0.04, 20, 0.000000035, 0.25, 0, 0, 0, 0, 0)
 
 for i in range(34):
         country.spawn_infantry(1)
@@ -69,7 +69,7 @@ for i in range(simulations):
 
 plt.plot(country3, color='pink')
 
-country = Country("France", "FRA", 420000, 1000, 0.05, 34, 0.00000003, 0.1, 0, 0, 0, 0, 0)
+country = Country("France", "FRA", 420000, 1000, 0.05, 26, 0.00000003, 0.1, 0, 0, 0, 0, 0)
 
 for i in range(72):
         country.spawn_infantry(1)
@@ -88,7 +88,7 @@ for i in range(simulations):
 
 plt.plot(country4, color='blue')
 
-country = Country("USA", "USA", 1310280, 1000, 0.05, 34, 0.000000025, 0.0, 0, 0, 0, 0, 0)
+country = Country("USA", "USA", 1310280, 1000, 0.05, 31, 0.000000025, 0.0, 0, 0, 0, 0, 0)
 
 for i in range(40):
         country.spawn_infantry(1)
@@ -107,7 +107,7 @@ for i in range(simulations):
 
 plt.plot(country5, color='lightblue')
 
-country = Country("Italy", "ITA", 434000, 1000, 0.05, 34, 0.00000002, 0.2, 0, 0, 0, 0, 0)
+country = Country("Italy", "ITA", 434000, 1000, 0.05, 27, 0.00000002, 0.2, 0, 0, 0, 0, 0)
 
 for i in range(46):
         country.spawn_infantry(1)
@@ -127,7 +127,7 @@ for i in range(simulations):
 plt.plot(country6, color='green')
 
 
-country = Country("Hungary", "HUN", 91290, 1000, 0.05, 34, 0.00000002, 0.2, 0, 0, 0, 0, 0)
+country = Country("Hungary", "HUN", 91290, 1000, 0.05, 10, 0.00000003, 0.25, 0, 0, 0, 0, 0)
 
 for i in range(15):
         country.spawn_infantry(1)
@@ -146,7 +146,7 @@ for i in range(simulations):
 
 plt.plot(country7, color='orange')
 
-country = Country("Romania", "ROM", 199338, 1000, 0.05, 34, 0.00000002, 0.1, 0, 0, 0, 0, 0)
+country = Country("Romania", "ROM", 199338, 1000, 0.05, 10, 0.00000003, 0.25, 0, 0, 0, 0, 0)
 
 for i in range(25):
         country.spawn_infantry(1)
@@ -165,7 +165,7 @@ for i in range(simulations):
 
 plt.plot(country8, color='yellow')
 
-country = Country("Netherlands", "HOL", 175338, 1000, 0.05, 34, 0.00000002, 0.1, 0, 0, 0, 0, 0)
+country = Country("Netherlands", "HOL", 175338, 1000, 0.05, 9, 0.000000020, 0.2, 0, 0, 0, 0, 0)
 
 for i in range(27):
         country.spawn_infantry(1)
