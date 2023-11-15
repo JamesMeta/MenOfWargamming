@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 class Infantry:
 
-    def __init__(self, unit_number, veterancy):
+    def __init__(self, unit_number, veterancy, nationality):
         self.unit_number = unit_number
         self.manpower = 100
         self.artillery = 3
@@ -11,7 +11,19 @@ class Infantry:
         self.anti_tank = 2
         self.veterancy = veterancy
         self.incirclement = False
+        self.unit_losses = 0
 
+        self.deployed_manpower = 0
+        self.deployed_artillery = 0
+        self.deployed_machine_guns = 0
+        self.deployed_anti_tank = 0
+
+        self.rear_guard = False
+
+        self.nationality = nationality
+
+        self.type = "Infantry"
+        
     def get_unit_number(self):
         return self.unit_number
     
@@ -32,6 +44,24 @@ class Infantry:
     
     def get_incirclement(self):
         return self.incirclement
+    
+    def get_deployed_manpower(self):
+        return self.deployed_manpower
+    
+    def get_deployed_artillery(self):
+        return self.deployed_artillery
+    
+    def get_deployed_machine_guns(self):
+        return self.deployed_machine_guns
+    
+    def get_deployed_anti_tank(self):
+        return self.deployed_anti_tank
+    
+    def get_nationality(self):
+        return self.nationality
+    
+    def get_unit_type(self):
+        return self.type
     
     def set_unit_number(self, unit_number):
         if unit_number > 0:
@@ -72,11 +102,56 @@ class Infantry:
     def set_incirclement(self, incirclement):
         self.incirclement = incirclement
 
+    def set_deployed_manpower(self, deployed_manpower):
+        if deployed_manpower > 0:
+            self.deployed_manpower = deployed_manpower
+            self.manpower -= deployed_manpower
+
+    def set_deployed_artillery(self, deployed_artillery):
+        if deployed_artillery > 0:
+            self.deployed_artillery = deployed_artillery
+            self.artillery -= deployed_artillery
+    
+    def set_deployed_machine_guns(self, deployed_machine_guns):
+        if deployed_machine_guns > 0:
+            self.deployed_machine_guns = deployed_machine_guns
+            self.machine_guns -= deployed_machine_guns
+    
+    def set_deployed_anti_tank(self, deployed_anti_tank):
+        if deployed_anti_tank > 0:
+            self.deployed_anti_tank = deployed_anti_tank
+            self.anti_tank -= deployed_anti_tank
+
+    def set_rear_guard(self):
+        self.set_deployed_manpower(self.manpower//5)
+        self.set_deployed_artillery(self.artillery//3)
+        self.set_deployed_machine_guns(self.machine_guns//2)
+        self.set_deployed_anti_tank(self.anti_tank//2)
+        self.rear_guard = True
+    
+    def set_full_deployment(self):
+        self.set_deployed_manpower(self.manpower)
+        self.set_deployed_artillery(self.artillery)
+        self.set_deployed_machine_guns(self.machine_guns)
+        self.set_deployed_anti_tank(self.anti_tank)
+
+    def after_action_update(self):
+
+        self.deployed_manpower = 0
+        self.deployed_artillery = 0
+        self.deployed_machine_guns = 0
+        self.deployed_anti_tank = 0
+
+        self.rear_guard = False
+
+    def sum_unit_losses(self, unit_losses):
+        self.unit_losses += unit_losses
+
     def __str__(self):
         return f"Infantry Division {self.unit_number} \nManpower: {self.manpower} \nArtillery: {self.artillery} \nMachine Guns: {self.machine_guns} \nAnti Tank: {self.anti_tank} \nVeterancy: {self.veterancy} \nIncirclement: {self.incirclement}"
       
 class Armored:
-    def __init__(self, unit_number, veterancy):
+    def __init__(self, unit_number, veterancy, nationality):
         self.unit_number = unit_number
         self.manpower = 60
         self.tanks = 6
@@ -84,6 +159,17 @@ class Armored:
         self.veterancy = veterancy
         self.incirclement = False
         self.unit_losses = 0
+
+        self.deployed_manpower = 0
+        self.deployed_tanks = 0
+        self.deployed_motorized = 0
+
+        self.rear_guard = False
+
+        self.nationality = nationality
+
+        self.type = "Armored"
+
     
     def get_unit_number(self):
         return self.unit_number
@@ -105,6 +191,21 @@ class Armored:
     
     def get_unit_losses(self):
         return self.unit_losses
+    
+    def get_deployed_manpower(self):
+        return self.deployed_manpower
+    
+    def get_deployed_tanks(self):
+        return self.deployed_tanks
+    
+    def get_deployed_motorized(self):
+        return self.deployed_motorized
+
+    def get_nationality(self):
+        return self.nationality
+    
+    def get_unit_type(self):
+        return self.type
     
     def set_unit_number(self, unit_number):
         if unit_number > 0:
@@ -138,6 +239,37 @@ class Armored:
     
     def set_incirclement(self, incirclement):
         self.incirclement = incirclement
+
+    def set_deployed_manpower(self, deployed_manpower):
+        self.deployed_manpower = deployed_manpower
+        self.manpower -= deployed_manpower
+    
+    def set_deployed_tanks(self, deployed_tanks):
+        self.deployed_tanks = deployed_tanks
+        self.tanks -= deployed_tanks
+
+    def set_deployed_motorized(self, deployed_motorized):
+        self.deployed_motorized = deployed_motorized
+        self.motorized -= deployed_motorized
+    
+    def set_rear_guard(self):
+        self.set_deployed_manpower(self.manpower//5)
+        self.set_deployed_tanks(self.tanks//4)
+        self.set_deployed_motorized(self.motorized//4)
+        self.rear_guard = True
+    
+    def set_full_deployment(self):
+        self.set_deployed_manpower(self.manpower)
+        self.set_deployed_tanks(self.tanks)
+        self.set_deployed_motorized(self.motorized)
+
+    def after_action_update(self):
+
+        self.deployed_manpower = 0
+        self.deployed_tanks = 0
+        self.deployed_motorized = 0
+
+        self.rear_guard = False
     
     def sum_unit_losses(self, unit_losses):
         self.unit_losses += unit_losses
@@ -151,7 +283,14 @@ class Statistics:
 
         self.battle_list = []
         self.country_map = country_map
-        self.country_losses_map = {}
+        self.country_manpower_losses_map = {}
+        self.country_equipment_losses_map = {}
+        self.country_stockpile_map = {}
+
+        for country_tag in self.country_map:
+            self.country_manpower_losses_map[country_tag] = []
+            self.country_equipment_losses_map[country_tag] = []
+            self.country_stockpile_map[country_tag] = []
     
     def get_total_battles(self):
         return self.total_battles
@@ -164,22 +303,50 @@ class Statistics:
         self.total_battles += 1
         self.total_losses += battle.get_total_losses()
 
-    ##TODO:
-    def graph_losses_for_country(self, country_tag):
-        pass
+    def next_turn(self):
+        for country_tag in self.country_map:
+            self.country_manpower_losses_map[country_tag].append(self.country_map[country_tag].get_manpower_losses())
+            self.country_equipment_losses_map[country_tag].append(self.country_map[country_tag].get_artillery_losses() + self.country_map[country_tag].get_anti_tank_losses() + self.country_map[country_tag].get_machine_guns_losses() + self.country_map[country_tag].get_tanks_losses() + self.country_map[country_tag].get_motorized_losses())
+            self.country_stockpile_map[country_tag].append(self.country_map[country_tag].get_surplus_artillery() + self.country_map[country_tag].get_surplus_anti_tank() + self.country_map[country_tag].get_surplus_machine_guns() + self.country_map[country_tag].get_surplus_tanks() + self.country_map[country_tag].get_surplus_motorized())
+        
+    def graph_equipment_losses_for_country(self, country_tag):
+        losses_array = self.country_equipment_losses_map[country_tag]
+        country = self.country_map[country_tag]
+        plt.plot(losses_array, color=country.get_country_colour(), label=country.get_country_name())
+        plt.xlabel('Weeks')
+        plt.show()
 
-    ##TODO:
-    def graph_losses_for_all_countries(self):
-        pass
+    def graph_manpower_losses_for_country(self, country_tag):
+        losses_array = self.country_manpower_losses_map[country_tag]
+        country = self.country_map[country_tag]
+        plt.plot(losses_array, color=country.get_country_colour(), label=country.get_country_name())
+        plt.xlabel('Weeks')
+        plt.show()
 
-    ##TODO:
+    def graph_equipment_losses_for_all(self):
+        for country_tag in self.country_map:
+            losses_array = self.country_equipment_losses_map[country_tag]
+            country = self.country_map[country_tag]
+            plt.plot(losses_array, color=country.get_country_colour(), label=country.get_country_name())
+
+    def graph_manpower_losses_for_all(self):
+        for country_tag in self.country_map:
+            losses_array = self.country_manpower_losses_map[country_tag]
+            country = self.country_map[country_tag]
+            plt.plot(losses_array, color=country.get_country_colour(), label=country.get_country_name())
+
     def graph_stockpile_for_country(self, country_tag):
-        pass
+        stockpile_array = self.country_stockpile_map[country_tag]
+        country = self.country_map[country_tag]
+        plt.plot(stockpile_array, color=country.get_country_colour(), label=country.get_country_name())
+        plt.xlabel('Weeks')
+        plt.show()
 
-    ##TODO:
     def graph_stockpile_for_all_countries(self):
-        pass
-
+        for country_tag in self.country_map:
+            stockpile_array = self.country_stockpile_map[country_tag]
+            country = self.country_map[country_tag]
+            plt.plot(stockpile_array, color=country.get_country_colour(), label=country.get_country_name())
             
 
 class Battle:
@@ -200,9 +367,10 @@ class Battle:
     
 class Country:
  
-    def __init__(self, country_name, country_tag, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized):
+    def __init__(self, country_name, country_tag, nationality, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized, colour):
         self.country_name = country_name
         self.country_tag = country_tag
+        self.nationality = nationality
         self.population = population
         self.num_of_cities = num_of_cities
         self.production_coefficient = production_coefficient
@@ -232,6 +400,8 @@ class Country:
 
         self.internal_round_counter = 0
 
+        self.country_colour = colour
+
     def get_country_name(self):
         return self.country_name
     
@@ -244,6 +414,9 @@ class Country:
     def get_population(self):
         return self.population
     
+    def get_country_colour(self):
+        return self.country_colour
+
     def get_num_of_cities(self):
         return self.num_of_cities
     
@@ -361,12 +534,12 @@ class Country:
 
     def spawn_infantry(self, veterancy):
         unit_number = self.find_avaliable_unit_number("infantry")
-        self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy)
+        self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy, self.nationality)
         print(f"Spawned Infantry Division {unit_number} for {self.country_name}")
     
     def spawn_armored(self, veterancy):
         unit_number = self.find_avaliable_unit_number("armored")
-        self.armored_divisions[unit_number] = Armored(unit_number, veterancy)
+        self.armored_divisions[unit_number] = Armored(unit_number, veterancy, self.nationality)
         print(f"Spawned Armored Division {unit_number} for {self.country_name}")
     
     def delete_unit(self, unit_number, unit_type):
@@ -658,15 +831,15 @@ class World:
         print("This calculator has a default setup and a custom setup.")
         setup=input("Enter D for default setup or C for custom setup: ")
         if setup == "D":
-            self.create_country("United Kingdom", "ENG", 607600, 2000, 0.015, 20, 0.000000035, 0.25, 120, 95, 135, 70, 50)
-            self.create_country("France", "FRA", 420000, 3000, 0.025, 26, 0.00000003, 0.1, 100, 80, 120, 60, 40)
-            self.create_country("United States", "USA", 1310000, 300, 0.005, 31, 0.000000025, 0.0, 200, 160, 240, 120, 80)
-            self.create_country("Netherlands", "HOL", 170000, 800, 0.025, 9, 0.000000020, 0.2, 40, 32, 48, 24, 16)
-            self.create_country("Germany", "GER", 690000, 4000, 0.05, 34, 0.000000030, 0.2, 160, 128, 192, 96, 64)
-            self.create_country("Italy", "ITA", 440000, 1000, 0.05, 27, 0.00000002, 0.2, 80, 64, 96, 48, 32)
-            self.create_country("Romania", "ROM", 200000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
-            self.create_country("Hungary", "HUN", 100000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
-            self.create_country("Soviet Union", "SOV", 1700000, 10000, 0.05, 29, 0.000000025, 0.0, 400, 320, 480, 240, 160)
+            self.create_country("United Kingdom", "ENG","British", 607600, 2000, 0.015, 20, 0.000000035, 0.25, 120, 95, 135, 70, 50)
+            self.create_country("France", "FRA", "French", 420000, 3000, 0.025, 26, 0.00000003, 0.1, 100, 80, 120, 60, 40)
+            self.create_country("United States", "USA", "American", 1310000, 300, 0.005, 31, 0.000000025, 0.0, 200, 160, 240, 120, 80)
+            self.create_country("Netherlands", "HOL", "Dutch", 170000, 800, 0.025, 9, 0.000000020, 0.2, 40, 32, 48, 24, 16)
+            self.create_country("Germany", "GER", "German", 690000, 4000, 0.05, 34, 0.000000030, 0.2, 160, 128, 192, 96, 64)
+            self.create_country("Italy", "ITA", "Italian", 440000, 1000, 0.05, 27, 0.00000002, 0.2, 80, 64, 96, 48, 32)
+            self.create_country("Romania", "ROM", "Romanian", 200000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
+            self.create_country("Hungary", "HUN", "Hungarian", 100000, 500, 0.05, 10, 0.00000003, 0.25, 40, 32, 48, 24, 16)
+            self.create_country("Soviet Union", "SOV", "Russian", 1700000, 10000, 0.05, 29, 0.000000025, 0.0, 400, 320, 480, 240, 160)
             self.create_statistics()
         else:
             print("Custom setup not implemented yet!")
@@ -679,9 +852,205 @@ class World:
         statistics = Statistics(self.country_map)
         self.statistics = statistics
     
+    def get_suffix(self, number):
+        if number % 100 in [11, 12, 13]:
+            suffix = "th"
+        else:
+            last_digit = number % 10
+            if last_digit == 1:
+                suffix = "st"
+            elif last_digit == 2:
+                suffix = "nd"
+            elif last_digit == 3:
+                suffix = "rd"
+            else:
+                suffix = "th"
+        return suffix
+
     ##TODO:
     def start_battle(self):
-        pass
+
+        print("For items with multiple values, separate them with a comma.")
+        print("When entering units type their number followed by a period and then the type of unit followed by another period and then its country tag. For example: 1.infantry.ENG, 2.armored.GER\n")
+
+        name = input("Enter battle name: ")
+
+        print()
+        
+        attacker_units = input("Enter attacker units: ")
+        defender_units = input("Enter defender units: ")
+
+        attacker_units_list = attacker_units.split(",")
+        defender_units_list = defender_units.split(",")
+
+        attacking_countries = []
+        defending_countries = []
+        attacking_units_object_list = []
+        defending_units_object_list = []
+
+        for unit in attacker_units_list:
+
+            unit_number = int(unit.split(".")[0])
+            unit_type = unit.split(".")[1]
+            country_tag = unit.split(".")[2]
+
+            attacking_countries.append(country_tag)
+
+            unit = self.country_map[country_tag].get_unit(unit_number, unit_type)
+            attacking_units_object_list.append(unit)
+
+            print(unit)
+            fit_for_battle = input("Is this unit fit for battle? (Y/N): ")
+
+            if fit_for_battle == "Y":
+                rear_guard = input("Is this unit a rear guard? (Y/N): ")
+
+                if rear_guard == "Y":
+                    unit.set_rear_guard()
+                else:
+                    unit.set_full_deployment()
+
+            else:
+                continue
+
+        for unit in defender_units_list:
+
+            unit_number = int(unit.split(".")[0])
+            unit_type = unit.split(".")[1]
+            country_tag = unit.split(".")[2]
+
+            defending_countries.append(country_tag)
+
+            unit = self.country_map[country_tag].get_unit(unit_number, unit_type)
+            defending_units_object_list.append(unit)
+
+            print(unit)
+            fit_for_battle = input("Is this unit fit for battle? (Y/N): ")
+
+            if fit_for_battle == "Y":
+                rear_guard = input("Is this unit a rear guard? (Y/N): ")
+
+                if rear_guard == "Y":
+                    unit.set_rear_guard()
+                else:
+                    unit.set_full_deployment()
+
+            else:
+                continue
+
+        print(f"The Battle of {name} has begun with",end=" ")
+        for country in attacking_countries:
+            print(self.country_map[country].get_country_name(),end=" ")
+        print("on the offensive",end=" ")
+        for country in defending_countries:
+            print(self.country_map[country].get_country_name(),end=" ")
+        print("on the defensive")
+
+        print("Here we will see",end=" ")
+        for country in attacking_countries:
+            print(self.country_map[country].get_country_name(),end=" ")
+        print("attacking with the units:\n")
+        for unit in attacking_units_object_list:
+            print(f"{unit.get_nationality()} {unit.get_unit_number()}{self.get_suffix(unit_number)} {unit.get_unit_type()} Division",end=" ")
+
+
+            print("with the following equipment:")
+
+            if unit.get_unit_type().upper() == "INFANTRY":
+                print(f"Manpower: {unit.get_manpower()}")
+                print(f"Artillery: {unit.get_artillery()}")
+                print(f"Machine Guns: {unit.get_machine_guns()}")
+                print(f"Anti Tank: {unit.get_anti_tank()}")
+
+            if unit.get_unit_type().upper() == "ARMOURED":
+                print(f"Manpower: {unit.get_manpower()}")
+                print(f"Tanks: {unit.get_tanks()}")
+                print(f"Motorized: {unit.get_motorized()}")
+
+            print(f"Veterancy: {unit.get_veterancy()}")
+            print()
+
+        print("Here we will also see",end=" ")
+        for country in defending_countries:
+            print(self.country_map[country].get_country_name(),end=" ")
+        print("defending with the units:\n")
+        for unit in defending_units_object_list:
+            print(f"{unit.get_nationality()} {unit.get_unit_number()}{self.get_suffix(unit_number)} {unit.get_unit_type()} Division",end=" ")
+
+            if unit.get_rear_guard():
+                print("Performing Rear Guard Action", end=" ")
+            
+            print("with the following equipment:")
+
+            if unit.get_unit_type().upper() == "INFANTRY":
+                print(f"Manpower: {unit.get_manpower()}")
+                print(f"Artillery: {unit.get_artillery()}")
+                print(f"Machine Guns: {unit.get_machine_guns()}")
+                print(f"Anti Tank: {unit.get_anti_tank()}")
+            
+            if unit.get_unit_type().upper() == "ARMOURED":
+                print(f"Manpower: {unit.get_manpower()}")
+                print(f"Tanks: {unit.get_tanks()}")
+                print(f"Motorized: {unit.get_motorized()}")
+
+            print(f"Veterancy: {unit.get_veterancy()}")
+
+            if unit.get_incirclement():
+                print("This unit is encircled, upon defeat it will be its final battle")
+            
+            print()
+        
+        print("The battle will now begin!")
+        input("Press enter to continue and enter battle casualties...")
+        
+        for unit in attacking_units_object_list:
+            print(f"For the {unit.get_nationality()} {unit.get_unit_number()}{self.get_suffix(unit_number)} {unit.get_unit_type()} Division")
+            if unit.get_unit_type().upper() == "ARMOURED":
+                remaining_men=input("how many men remain: ")
+                remaining_tanks=input("how many tanks remain: ")
+                remaining_motorized=input("how many motorized remain: ")
+
+                manpower_losses = unit.get_deployed_manpower() - remaining_men
+                tanks_losses = unit.get_deployed_tanks() - remaining_tanks
+                motorized_losses = unit.get_deployed_motorized() - remaining_motorized
+
+                unit.sum_unit_losses(manpower_losses + tanks_losses + motorized_losses)
+
+                unit.set_manpower(remaining_men)
+                unit.set_tanks(remaining_tanks)
+                unit.set_motorized(remaining_motorized)
+
+                #::TODO:: add losses to statistics
+
+            if unit.get_unit_type().upper() == "INFANTRY":
+                remaining_men=input("how many men remain: ")
+                remaining_artillery=input("how many artillery remain: ")
+                remaining_machine_guns=input("how many machine guns remain: ")
+                remaining_anti_tank=input("how many anti tank remain: ")
+
+                manpower_losses = unit.get_deployed_manpower() - remaining_men
+                artillery_losses = unit.get_deployed_artillery() - remaining_artillery
+                machine_guns_losses = unit.get_deployed_machine_guns() - remaining_machine_guns
+                anti_tank_losses = unit.get_deployed_anti_tank() - remaining_anti_tank
+
+                unit.sum_unit_losses(manpower_losses + artillery_losses + machine_guns_losses + anti_tank_losses)
+
+                unit.set_manpower(remaining_men)
+                unit.set_artillery(remaining_artillery)
+                unit.set_machine_guns(remaining_machine_guns)
+                unit.set_anti_tank(remaining_anti_tank)
+
+                #::TODO:: add losses to statistics
+            
+            
+
+
+            
+
+            
+        
+
+
 
     ##TODO:
     def enter_country_menu(self, country_tag):
@@ -693,6 +1062,10 @@ class World:
 
     ##TODO:
     def next_turn(self):
+        pass
+
+    ##TODO:
+    def save_game(self):
         pass
 
 
