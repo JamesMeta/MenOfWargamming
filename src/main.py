@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 class Infantry:
 
-    def __init__(self, unit_number, veterancy, nationality):
+    def __init__(self, unit_number, veterancy, nationality, country_tag):
         self.unit_number = unit_number
         self.manpower = 100
         self.artillery = 3
@@ -21,6 +21,7 @@ class Infantry:
         self.rear_guard = False
 
         self.nationality = nationality
+        self.country_tag = country_tag
 
         self.type = "Infantry"
         
@@ -151,7 +152,7 @@ class Infantry:
         return f"Infantry Division {self.unit_number} \nManpower: {self.manpower} \nArtillery: {self.artillery} \nMachine Guns: {self.machine_guns} \nAnti Tank: {self.anti_tank} \nVeterancy: {self.veterancy} \nIncirclement: {self.incirclement}"
       
 class Armored:
-    def __init__(self, unit_number, veterancy, nationality):
+    def __init__(self, unit_number, veterancy, nationality, country_tag):
         self.unit_number = unit_number
         self.manpower = 60
         self.tanks = 6
@@ -167,6 +168,7 @@ class Armored:
         self.rear_guard = False
 
         self.nationality = nationality
+        self.country_tag = country_tag
 
         self.type = "Armored"
 
@@ -534,12 +536,12 @@ class Country:
 
     def spawn_infantry(self, veterancy):
         unit_number = self.find_avaliable_unit_number("infantry")
-        self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy, self.nationality)
+        self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy, self.nationality, self.country_tag)
         print(f"Spawned Infantry Division {unit_number} for {self.country_name}")
     
     def spawn_armored(self, veterancy):
         unit_number = self.find_avaliable_unit_number("armored")
-        self.armored_divisions[unit_number] = Armored(unit_number, veterancy, self.nationality)
+        self.armored_divisions[unit_number] = Armored(unit_number, veterancy, self.nationality, self.country_tag)
         print(f"Spawned Armored Division {unit_number} for {self.country_name}")
     
     def delete_unit(self, unit_number, unit_type):
@@ -911,7 +913,7 @@ class World:
                     unit.set_full_deployment()
 
             else:
-                continue
+                attacking_units_object_list.remove(unit)
 
         for unit in defender_units_list:
 
@@ -936,7 +938,7 @@ class World:
                     unit.set_full_deployment()
 
             else:
-                continue
+                defending_units_object_list.remove(unit)
 
         print(f"The Battle of {name} has begun with",end=" ")
         for country in attacking_countries:
