@@ -1,1 +1,1 @@
-print("james".upper())
+print(type((1, 2, 3)))
