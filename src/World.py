@@ -60,8 +60,13 @@ class World:
 
         for unit in unit_list:
             unit_number = int(unit.split(".")[0])
-            unit_type = unit.split(".")[1]
+            unit_type_tag = unit.split(".")[1]
             country_tag = unit.split(".")[2]
+            if unit_type_tag == "inf":
+                unit_type = "infantry"
+            elif unit_type_tag == "arm":
+                unit_type = "armored"
+
 
             unit = self.country_map[country_tag].get_unit(unit_number, unit_type)
             units_object_list.append(unit)
@@ -70,12 +75,10 @@ class World:
             print(unit)
             fit_for_battle = input("Is this unit fit for battle? (Y/N): ")
 
-            if fit_for_battle.upper() == "Y":
-                pass
-
-            else:
-                print(f"Removing {unit} from battle")
+            if fit_for_battle.upper() == "N":
+                print(f"Removing unit from battle\n")
                 units_object_list.remove(unit)
+                continue
 
             if defending:
                 rear_guard = input("Is this unit a rear guard? (Y/N): ")
@@ -83,6 +86,10 @@ class World:
                     unit.set_rear_guard()
                 else:
                     unit.set_full_deployment()
+            else:
+                unit.set_full_deployment()
+            print()
+            
 
         return units_object_list, country_names
 
@@ -139,15 +146,15 @@ class World:
             print("with the following equipment:")
 
             if unit.get_unit_type().upper() == "INFANTRY":
-                print(f"Manpower: {unit.get_manpower()}")
-                print(f"Artillery: {unit.get_artillery()}")
-                print(f"Machine Guns: {unit.get_machine_guns()}")
-                print(f"Anti Tank: {unit.get_anti_tank()}")
+                print(f"Manpower: {unit.get_deployed_manpower()}")
+                print(f"Artillery: {unit.get_deployed_artillery()}")
+                print(f"Machine Guns: {unit.get_deployed_machine_guns()}")
+                print(f"Anti Tank: {unit.get_deployed_anti_tank()}")
             
             if unit.get_unit_type().upper() == "ARMORED":
-                print(f"Manpower: {unit.get_manpower()}")
-                print(f"Tanks: {unit.get_tanks()}")
-                print(f"Motorized: {unit.get_motorized()}")
+                print(f"Manpower: {unit.get_deployed_manpower()}")
+                print(f"Tanks: {unit.get_deployed_tanks()}")
+                print(f"Motorized: {unit.get_deployed_motorized()}")
 
             print(f"Veterancy: {unit.get_veterancy()}")
 
@@ -156,29 +163,75 @@ class World:
             
             print()
 
+    def check_validity_unit_list(self, unit_list):
+        for unit in unit_list:
+            try:
+                unit_number = int(unit.split(".")[0])
+            except:
+                print(f"Invalid unit number: {unit}")
+                return False
+            try:
+                unit_type_tag = unit.split(".")[1]
+                country_tag = unit.split(".")[2]
+            except:
+                print(f"Invalid unit: {unit}")
+                return False
+            if unit_type_tag not in ["inf", "arm"]:
+                print(f"Invalid unit type: {unit}")
+                return False
+            else:
+                if unit_type_tag == "inf":
+                    unit_type_tag = "infantry"
+                elif unit_type_tag == "arm":
+                    unit_type_tag = "armored"
+            if country_tag not in self.country_map:
+                print(f"Invalid country tag: {unit}")
+                return False
+            if self.country_map[country_tag].get_unit(unit_number, unit_type_tag) == None:
+                print(f"Invalid unit number: {unit}")
+                return False
+            if len(unit.split(".")) != 3:
+                print(f"Invalid unit: {unit}")
+                return False
+        return True
+    
+    def end_of_battle_update(self, attacker_units_object_list, defender_units_object_list):
+        for unit in attacker_units_object_list:
+            unit.after_action_update()
+        for unit in defender_units_object_list:
+            unit.after_action_update()
+
     def start_battle(self):
 
-        print("For items with multiple values, separate them with a comma.")
-        print("When entering units type their number followed by a period and then the type of unit followed by another period and then its country tag. For example: 1.infantry.ENG, 2.armored.GER\n")
+        print("For items with multiple values, separate them with a space.")
+        print("When entering units type their number followed by a period and then the type of unit followed by another period and then its country tag. For example: 1.inf.ENG 2.arm.GER\n")
 
         name = input("Enter battle name: ")
 
         print()
-        
-        attacker_units = input("Enter attacker units: ")
-        defender_units = input("Enter defender units: ")
+            
+        while True:
+            attacker_units = input("Enter attacker units: ")
+            defender_units = input("Enter defender units: ")
 
-        attacker_units_list = attacker_units.split(",")
-        defender_units_list = defender_units.split(",")
+            attacker_units_list = attacker_units.split(" ")
+            defender_units_list = defender_units.split(" ")
+            if self.check_validity_unit_list(attacker_units_list) and self.check_validity_unit_list(defender_units_list):
+                break
+            else:
+                print("Invalid unit list, try again\n")
 
         attacking_countries = []
         defending_countries = []
         attacking_units_object_list = []
         defending_units_object_list = []
 
-        attacking_units_object_list, attacking_countries = self.process_units(attacker_units_list, False)
-        defending_units_object_list, defending_countries = self.process_units(defender_units_list, True)
-        
+        try:
+            attacking_units_object_list, attacking_countries = self.process_units(attacker_units_list, False)
+            defending_units_object_list, defending_countries = self.process_units(defender_units_list, True)
+        except:
+            print("Something went wrong with the processing of units")
+            
 
         print(f"The Battle of {name} has begun with",end=" ")
         for country in attacking_countries:
@@ -199,14 +252,17 @@ class World:
             print(country,end=" ")
         print("defending with the units:\n")
         self.display_involved_units(defending_units_object_list)
-        
+            
         print("The battle will now begin!")
         input("Press enter to continue and enter battle casualties...")
-        
-        attacker_total_losses = self.process_casualties(attacking_units_object_list, False)
-        defender_total_losses = self.process_casualties(defending_units_object_list, True)
+            
+        try:
+            attacker_total_losses = self.process_casualties(attacking_units_object_list, False)
+            defender_total_losses = self.process_casualties(defending_units_object_list, True)
+        except:
+            print("Something went wrong with the processing of casualties")
 
-        
+            
         winner = input("Who won the battle?: ")
 
         battle = self.statistics.new_battle(name, winner, attacking_countries, defending_countries, attacker_total_losses, defender_total_losses)
@@ -214,6 +270,7 @@ class World:
         print("The battle has ended!")
         print("Post battle statistics:")
         print(battle)
+        self.end_of_battle_update(attacking_units_object_list, defending_units_object_list)
 
     ##TODO:
     def enter_country_menu(self, country_tag):

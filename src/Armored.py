@@ -130,5 +130,5 @@ class Armored:
         self.unit_losses += unit_losses
 
     def __str__(self):
-            return f"Armor Division {self.unit_number} \nManpower: {self.manpower} \nTanks: {self.tanks} \nMotorized: {self.motorized} \nVeterancy: {self.veterancy} \nIncirclement: {self.incirclement}"
+            return f"{self.nationality} \nArmor Division {self.unit_number} \nManpower: {self.manpower} \nTanks: {self.tanks} \nMotorized: {self.motorized} \nVeterancy: {self.veterancy} \nIncirclement: {self.incirclement}"
     
