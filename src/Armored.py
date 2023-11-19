@@ -23,6 +23,9 @@ class Armored:
     def get_unit_number(self):
         return self.unit_number
     
+    def get_country_tag(self):
+        return self.country_tag
+
     def get_manpower(self):
         return self.manpower
     

@@ -6,7 +6,7 @@ class Statistics:
     def __init__(self, country_map):
         
         self.total_battles = 0
-        self.total_losses = [0,0,0,0,0]
+        self.total_losses = [0,0,0,0,0,0]
 
         self.battle_list = []
         self.country_map = country_map
