@@ -102,6 +102,12 @@ class Country:
     
     def get_trained_men(self):
         return self.trained_men
+    
+    def get_infantry_divisions(self):
+        return self.infantry_divisions
+    
+    def get_armored_divisions(self):
+        return self.armored_divisions
 
     def set_country_name(self, country_name):
         self.country_name = country_name
@@ -170,15 +176,39 @@ class Country:
         elif unit_type == "armored":
             return self.armored_divisions[unit_number]
 
-    def spawn_infantry(self, veterancy):
+    def spawn_infantry_free(self, veterancy):
         unit_number = self.find_avaliable_unit_number("infantry")
         self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy, self.nationality, self.country_tag)
         print(f"Spawned Infantry Division {unit_number} for {self.country_name}")
     
-    def spawn_armored(self, veterancy):
+    def spawn_armored_free(self, veterancy):
         unit_number = self.find_avaliable_unit_number("armored")
         self.armored_divisions[unit_number] = Armored(unit_number, veterancy, self.nationality, self.country_tag)
         print(f"Spawned Armored Division {unit_number} for {self.country_name}")
+
+    def spawn_infantry(self, veterancy):
+        if self.surplus_artillery < 3 or self.surplus_machine_guns < 2 or self.surplus_anti_tank < 2 or self.trained_men < 100:
+            print(f"Insufficient equipment for {self.country_name} to spawn Infantry Division")
+            return
+        else:
+            unit_number = self.find_avaliable_unit_number("infantry")
+            self.infantry_divisions[unit_number] = Infantry(unit_number, veterancy, self.nationality, self.country_tag)
+            self.surplus_artillery -= 3
+            self.surplus_machine_guns -= 2
+            self.surplus_anti_tank -= 2
+            self.trained_men -= 100
+            print(f"Spawned Infantry Division {unit_number} for {self.country_name}")
+    
+    def spawn_armored(self, veterancy):
+        if self.surplus_tanks < 6 or self.surplus_motorized < 5 or self.trained_men < 60:
+            print(f"Insufficient equipment for {self.country_name} to spawn Armored Division")
+            return
+        else:
+            unit_number = self.find_avaliable_unit_number("armored")
+            self.armored_divisions[unit_number] = Armored(unit_number, veterancy, self.nationality, self.country_tag)
+            self.surplus_tanks -= 6
+            self.surplus_motorized -= 5
+            self.trained_men -= 60
     
     def delete_unit(self, unit_number, unit_type):
         if unit_type == "infantry":
@@ -458,3 +488,23 @@ class Country:
 
         if self.internal_round_counter % 2 == 0:
             self.resupply_all_units()
+
+    def find_new_infantry_availability(self):
+        trained_men = self.trained_men//100
+        surplus_artillery = self.surplus_artillery//3
+        surplus_machine_guns = self.surplus_machine_guns//2
+        surplus_anti_tank = self.surplus_anti_tank//2
+
+        lowest = min(trained_men, surplus_artillery, surplus_machine_guns, surplus_anti_tank)
+        return lowest
+    
+    def find_new_armored_availability(self):
+        trained_men = self.trained_men//60
+        surplus_tanks = self.surplus_tanks//6
+        surplus_motorized = self.surplus_motorized//5
+        surplus_anti_tank = self.surplus_anti_tank//2
+
+        lowest = min(trained_men, surplus_tanks, surplus_motorized, surplus_anti_tank)
+        return lowest
+
+

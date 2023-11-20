@@ -27,9 +27,9 @@ class World:
     def create_country(self, country_name, country_tag, nationality, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized, color, infantry, armored):
         country = Country(country_name, country_tag, nationality, population, trained_men, conscription_law, num_of_cities, production_coefficient, attrition_coefficient, surplus_artillery, surplus_anti_tank, surplus_machine_guns, surplus_tanks, surplus_motorized, color)
         for i in range(infantry):
-            country.spawn_infantry(1)
+            country.spawn_infantry_free(1)
         for i in range(armored):
-            country.spawn_armored(1)
+            country.spawn_armored_free(1)
         self.country_map[country_tag] = country
 
     def create_statistics(self):
@@ -274,6 +274,110 @@ class World:
 
     ##TODO:
     def enter_country_menu(self, country_tag):
+        
+        while True:   
+            country = self.country_map[country_tag]
+            print(f"[{country.get_country_name()}]\n\n1. View Units\n2. View Production\n3. View Country Statistics\n4. View Stockpile\n5. View Losses\n6. Return to Main Menu\n")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                self.enter_unit_menu(country)
+            elif choice == "2":
+                self.enter_production_menu(country)
+            elif choice == "3":
+                self.enter_statistics_menu(country)
+            elif choice == "4":
+                self.enter_stockpile_menu(country)
+            elif choice == "5":
+                self.enter_losses_menu(country)
+            elif choice == "6":
+                break
+
+    def developer_settings(self, units, type):
+        while True:
+            print("Would you like to modify any units? (enter 0 to return to unit menu)")
+            modify = input("Enter Y/N: ")
+            if modify.upper() == "Y":
+                unit_num = int(input("Enter unit number: "))
+                unit = units[unit_num]
+                self.modify_unit(unit, "infantry")
+            elif modify == "0":
+                break
+
+    def enter_unit_menu(self, country):
+        while True:
+            print(f"[{country.get_country_name()} Unit Menu]")
+            print("1. View Infantry\n2. View Armored\n3. Make New Unit\n4. Delete unit\n5. Return to Country Menu\n")
+            choice = input("Enter choice: ")
+            if choice.startswith("1"):
+                infantry = country.get_infantry_divisions()
+                for unit in infantry:
+                    print(infantry[unit],"\n")
+                if choice == "1d":
+                    self.developer_settings(infantry, "infantry")
+                    
+            elif choice.startswith("2"):
+                armored = country.get_armored_divisions()
+                for unit in armored:
+                    print(armored[unit],"\n")
+                if choice == "2d":
+                    self.developer_settings(armored, "armored")
+                
+            elif choice == "3":
+                print(f"Currently we can build {country.find_new_infantry_availability()} new infantry units and {country.find_new_armored_availability()} new armored units\n")
+                while True:
+                    print("1. Build Infantry\n2. Build Armored\n3. Return to Unit Menu\n")
+                    choice = input("Enter choice: ")
+                    if choice == "1":
+                        country.spawn_infantry(1)
+                    elif choice == "2":
+                        country.spawn_armored(1)
+                    elif choice == "3":
+                        break
+            elif choice == "4":
+                while True:
+                    print("Enter the unit you want to delete in the format: unit number.unit type ----> 5.inf")
+                    print("Enter 0 to return to unit menu\n")
+                    unit = input("Enter unit: ")
+                    if unit == "0":
+                        break
+                    else:
+                        unit_number = int(unit.split(".")[0])
+                        unit_type_tag = unit.split(".")[1]
+                        if unit_type_tag == "inf":
+                            unit_type = "infantry"
+                        elif unit_type_tag == "arm":
+                            unit_type = "armored"
+                        country.delete_unit(unit_number, unit_type)
+            elif choice == "5":
+                break
+    
+    def modify_unit(self, unit, type):
+        if type == "infantry":
+            unit.set_manpower(int(input("Enter manpower: ")))
+            unit.set_artillery(int(input("Enter artillery: ")))
+            unit.set_machine_guns(int(input("Enter machine guns: ")))
+            unit.set_anti_tank(int(input("Enter anti tank: ")))
+            unit.set_veterancy(int(input("Enter veterancy: ")))
+        elif type == "armored":
+            unit.set_manpower(int(input("Enter manpower: ")))
+            unit.set_tanks(int(input("Enter tanks: ")))
+            unit.set_motorized(int(input("Enter motorized: ")))
+            unit.set_veterancy(int(input("Enter veterancy: ")))
+
+    ##TODO:
+    def enter_production_menu(self, country):
+        pass
+
+    ##TODO:
+    def enter_statistics_menu(self, country):
+        pass
+
+    ##TODO:
+    def enter_stockpile_menu(self, country):
+        pass
+
+    ##TODO:
+    def enter_losses_menu(self, country):
         pass
 
     ##TODO:
