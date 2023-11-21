@@ -8,6 +8,5 @@ def main():
         if command.startswith("unit_menu"):
             world.enter_country_menu(command.split(" ")[1])
 
-
 if __name__ == "__main__":
     main()
