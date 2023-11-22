@@ -103,6 +103,9 @@ class Country:
     def get_trained_men(self):
         return self.trained_men
     
+    def get_eligible_men(self):
+        return self.eligible_men
+    
     def get_infantry_divisions(self):
         return self.infantry_divisions
     
@@ -124,6 +127,7 @@ class Country:
     def set_consription_law(self, conscription_law):
         if conscription_law >= 0 and conscription_law <= 5:
             self.conscription_law = conscription_law
+            self.eligible_men = self.population * self.conscription_law
         else:
             self.conscription_law = 0
 
@@ -392,7 +396,7 @@ class Country:
 
     def train_men(self):
         army_size = self.find_army_size()
-        new_trainees = round(army_size/208)
+        new_trainees = (army_size//208)
         if new_trainees>self.eligible_men:
             print(f"Manpower pool dry for {self.country_name}")
             new_trainees=self.eligible_men

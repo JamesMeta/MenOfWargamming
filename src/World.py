@@ -50,9 +50,7 @@ class World:
             else:
                 suffix = "th"
         return suffix
-
-    ##TODO:
-
+    
     def process_units(self, unit_list, defending):
 
         units_object_list = []
@@ -370,7 +368,27 @@ class World:
 
     ##TODO:
     def enter_statistics_menu(self, country):
-        pass
+        while True:
+            print(f"""[{country.get_country_name()}]\n\nCountry Name:{country.get_country_name()}\nCountry Tag:{country.get_country_tag()}\n
+                Population: {country.get_population()}\nNumber of Cities: {country.get_num_of_cities()}\nPopulation per City:{country.get_population_per_city()}
+                Production Coefficient: {country.get_production_coefficient()} Attrition Coefficient: {country.get_attrition_coefficient()}
+                Surplus Artillery: {country.get_surplus_artillery()}\nSurplus Anti Tank: {country.get_surplus_anti_tank()}\nSurplus Machine Guns: {country.get_surplus_machine_guns()}\nSurplus Tanks: {country.get_surplus_tanks()}\nSurplus Motorized: {country.get_surplus_motorized()}
+                Conscription Law: {country.get_conscription_law()}\nTrained Men: {country.get_trained_men()}\nEligible Men: {country.get_eligible_men()}
+                """)
+            print("1. Modify City Count\n2. Modify Production Coefficent\n3. Modify Attrition Coefficent\n4. Modify Conscription Law\n5. Return to Country Menu\n")
+            choice=input("Enter Command: ")
+            if choice == "1":
+                country.set_num_of_cities(country.get_num_of_cities()-int(input("Enter number of cities lost: ")))
+                print(f"New number of cities: {country.get_num_of_cities()}")
+            elif choice == "2":
+                country.set_production_coefficient(float(input("Enter new production coefficient as a decimal [0,10]: "))//(10**8))
+            elif choice == "3":
+                country.set_attrition_coefficient(float(input("Enter new attrition coefficient as a decimal [0,1]: ")))
+            elif choice == "4":
+                country.set_conscription_law(float(input("Enter new conscription law as a decimal [0,1]: ")))
+            elif choice == "5":
+                break
+            
 
     ##TODO:
     def enter_stockpile_menu(self, country):
@@ -378,10 +396,6 @@ class World:
 
     ##TODO:
     def enter_losses_menu(self, country):
-        pass
-
-    ##TODO:
-    def enter_statistics_menu(self):
         pass
 
     ##TODO:
