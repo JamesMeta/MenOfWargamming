@@ -282,7 +282,7 @@ class World:
             elif choice == "2":
                 self.enter_production_menu(country)
             elif choice == "3":
-                self.enter_statistics_menu(country)
+                self.enter_country_statistics_menu(country)
             elif choice == "4":
                 self.enter_stockpile_menu(country)
             elif choice == "5":
@@ -364,16 +364,65 @@ class World:
 
     ##TODO:
     def enter_production_menu(self, country):
-        pass
-
-    ##TODO:
-    def enter_statistics_menu(self, country):
         while True:
-            print(f"""[{country.get_country_name()}]\n\nCountry Name:{country.get_country_name()}\nCountry Tag:{country.get_country_tag()}\n
-                Population: {country.get_population()}\nNumber of Cities: {country.get_num_of_cities()}\nPopulation per City:{country.get_population_per_city()}
-                Production Coefficient: {country.get_production_coefficient()} Attrition Coefficient: {country.get_attrition_coefficient()}
-                Surplus Artillery: {country.get_surplus_artillery()}\nSurplus Anti Tank: {country.get_surplus_anti_tank()}\nSurplus Machine Guns: {country.get_surplus_machine_guns()}\nSurplus Tanks: {country.get_surplus_tanks()}\nSurplus Motorized: {country.get_surplus_motorized()}
-                Conscription Law: {country.get_conscription_law()}\nTrained Men: {country.get_trained_men()}\nEligible Men: {country.get_eligible_men()}
+            print(f"[{country.get_country_name()} Production Menu]\n\n1. View Production\n2. Modify Production\n3. Return to Country Menu\n")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                print("Estimated Production of Equipment: (proportion --> estimated production))")
+                print(f"Artillery: {country.get_proportions()['artillery']} ---> {self.calculate_estimated_production_of_equipment('artillery', country)}")
+                print(f"Machine Guns: {country.get_proportions()['machine_guns']} ---> {self.calculate_estimated_production_of_equipment('machine guns', country)}")
+                print(f"Anti Tank: {country.get_proportions()['anti_tank']} ---> {self.calculate_estimated_production_of_equipment('anti tank', country)}")
+                print(f"Tanks: {country.get_proportions()['tanks']} ---> {self.calculate_estimated_production_of_equipment('tanks', country)}")
+                print(f"Motorized: {country.get_proportions()['motorized']} ---> {self.calculate_estimated_production_of_equipment('motorized', country)}\n")
+            elif choice == "2":
+                print("Enter the proportion of production you want to reallocate to an equipment type and where you want to reallocate it from. ex. 1-artillery-machine_guns where 1 is the proportion of production you want to reallocate to artillery from machine guns")
+                change = input("Enter change: ")
+                change = change.split("-")
+                proportion = float(change[0])
+                equipment_to = change[1]
+                equipment_from = change[2]
+                country.get_proportions()[equipment_to] += proportion
+                country.get_proportions()[equipment_from] -= proportion
+
+
+            elif choice == "3":
+                break
+
+    def calculate_estimated_production_of_equipment(self, equipment, country):
+        population = country.get_population()
+        production_coefficient = country.get_production_coefficient()
+        num_of_cities = country.get_num_of_cities()
+        conscription_law = country.get_conscription_law()
+
+        if equipment == "artillery":
+            return round(24 * population * production_coefficient * num_of_cities *(1-conscription_law)) * 2
+        elif equipment == "machine guns":
+            return round(20 * population * production_coefficient * num_of_cities *(1-conscription_law)) * 2
+        elif equipment == "anti tank":
+            return round(28 * population * production_coefficient * num_of_cities *(1-conscription_law)) * 2
+        elif equipment == "tanks":
+            return round(15 * population * production_coefficient * num_of_cities *(1-conscription_law)) * 2
+        elif equipment == "motorized":
+            return round(11 * population * production_coefficient * num_of_cities *(1-conscription_law)) * 2
+
+    def enter_country_statistics_menu(self, country):
+        while True:
+            print(f"""[{country.get_country_name()}]\n\n
+Country Name:{country.get_country_name()}
+Country Tag:{country.get_country_tag()}
+Population: {country.get_population()}
+Number of Cities: {country.get_num_of_cities()}
+Population per City:{country.get_population_per_city()}
+Production Coefficient: {country.get_production_coefficient()} 
+Attrition Coefficient: {country.get_attrition_coefficient()}
+Surplus Artillery: {country.get_surplus_artillery()}
+Surplus Anti Tank: {country.get_surplus_anti_tank()}
+Surplus Machine Guns: {country.get_surplus_machine_guns()}
+Surplus Tanks: {country.get_surplus_tanks()}
+Surplus Motorized: {country.get_surplus_motorized()}
+Conscription Law: {country.get_conscription_law()}
+Trained Men: {country.get_trained_men()}
+Eligible Men: {country.get_eligible_men()}
                 """)
             print("1. Modify City Count\n2. Modify Production Coefficent\n3. Modify Attrition Coefficent\n4. Modify Conscription Law\n5. Return to Country Menu\n")
             choice=input("Enter Command: ")
@@ -381,7 +430,7 @@ class World:
                 country.set_num_of_cities(country.get_num_of_cities()-int(input("Enter number of cities lost: ")))
                 print(f"New number of cities: {country.get_num_of_cities()}")
             elif choice == "2":
-                country.set_production_coefficient(float(input("Enter new production coefficient as a decimal [0,10]: "))//(10**8))
+                country.set_production_coefficient(float(input("Enter new production coefficient as a decimal [0,10]: "))*(10**-8))
             elif choice == "3":
                 country.set_attrition_coefficient(float(input("Enter new attrition coefficient as a decimal [0,1]: ")))
             elif choice == "4":

@@ -36,6 +36,8 @@ class Country:
         self.tanks_losses = 0
         self.motorized_losses = 0
 
+        self.porportions = {"artillery": 24, "anti_tank": 19, "machine_guns": 27, "tanks": 14, "motorized": 10}
+
         self.internal_round_counter = 0
 
         self.country_colour = colour
@@ -111,7 +113,10 @@ class Country:
     
     def get_armored_divisions(self):
         return self.armored_divisions
-
+    
+    def get_proportions(self):
+        return self.porportions
+    
     def set_country_name(self, country_name):
         self.country_name = country_name
 
@@ -124,7 +129,7 @@ class Country:
         else:
             self.population = 0
     
-    def set_consription_law(self, conscription_law):
+    def set_conscription_law(self, conscription_law):
         if conscription_law >= 0 and conscription_law <= 5:
             self.conscription_law = conscription_law
             self.eligible_men = self.population * self.conscription_law
@@ -134,6 +139,8 @@ class Country:
     def set_num_of_cities(self, num_of_cities):
         if num_of_cities > 0:
             self.num_of_cities = num_of_cities
+            self.population = self.population_per_city * self.num_of_cities
+            
         else:
             self.num_of_cities = 0
     
@@ -179,6 +186,7 @@ class Country:
             return self.infantry_divisions[unit_number]
         elif unit_type == "armored":
             return self.armored_divisions[unit_number]
+        
 
     def spawn_infantry_free(self, veterancy):
         unit_number = self.find_avaliable_unit_number("infantry")
@@ -476,11 +484,11 @@ class Country:
 
     def run_production(self):
         random_number = random.randint(1,3)
-        self.surplus_artillery += round(24 * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
-        self.surplus_anti_tank += round(19 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_machine_guns += round(27 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_tanks += round(14 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_motorized += round(10 * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
+        self.surplus_artillery += round(self.get_proportions()['artillery'] * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
+        self.surplus_anti_tank += round(self.get_proportions()['anti_tank'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_machine_guns += round(self.get_proportions()['machine_guns'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_tanks += round(self.get_proportions()['tanks'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_motorized += round(self.get_proportions()['motorized'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
 
     def next_turn(self):
 
