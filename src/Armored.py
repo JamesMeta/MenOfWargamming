@@ -9,35 +9,7 @@ class Armored(Unit):
         self.deployed_tanks = 0
         self.deployed_motorized = 0
 
-        self.type = "Armored"
-
-    def get_tanks(self):
-        return self.tanks
-    
-    def get_motorized(self):
-        return self.motorized
-    
-    def get_deployed_tanks(self):
-        return self.deployed_tanks
-    
-    def get_deployed_motorized(self):
-        return self.deployed_motorized
-    
-    #override methods from Unit.py
-    def get_unit_type(self):
-        return self.type
-
-    def set_tanks(self, tanks):
-        if tanks > 0:
-            self.tanks = tanks
-        else:
-            self.tanks = 0
-
-    def set_motorized(self, motorized):
-        if motorized > 0:
-            self.motorized = motorized
-        else:
-            self.motorized = 0
+        self.unit_type = "Armored"
     
     def set_deployed_tanks(self, deployed_tanks):
         self.deployed_tanks = deployed_tanks

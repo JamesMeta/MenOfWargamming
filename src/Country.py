@@ -41,96 +41,9 @@ class Country:
         self.internal_round_counter = 0
 
         self.country_colour = colour
-
-    def get_country_name(self):
-        return self.country_name
-    
-    def get_conscription_law(self):
-        return self.conscription_law
-
-    def get_country_tag(self):
-        return self.country_tag
-    
-    def get_population(self):
-        return self.population
-    
-    def get_country_colour(self):
-        return self.country_colour
-
-    def get_num_of_cities(self):
-        return self.num_of_cities
-    
-    def get_production_coefficient(self):
-        return self.production_coefficient
-    
-    def get_attrition_coefficient(self):
-        return self.attrition_coefficient
-    
-    def get_population_per_city(self):
-        return self.population_per_city
-    
-    def get_manpower_losses(self):
-        return self.manpower_losses
-    
-    def get_artillery_losses(self):
-        return self.artillery_losses
-    
-    def get_anti_tank_losses(self):
-        return self.anti_tank_losses
-    
-    def get_machine_guns_losses(self):
-        return self.machine_guns_losses
-    
-    def get_tanks_losses(self):
-        return self.tanks_losses
-    
-    def get_motorized_losses(self):
-        return self.motorized_losses
-
-    def get_surplus_artillery(self):
-        return self.surplus_artillery
-    
-    def get_surplus_anti_tank(self):
-        return self.surplus_anti_tank
-    
-    def get_surplus_machine_guns(self):
-        return self.surplus_machine_guns
-    
-    def get_surplus_tanks(self):
-        return self.surplus_tanks
-    
-    def get_surplus_motorized(self):
-        return self.surplus_motorized
-    
-    def get_trained_men(self):
-        return self.trained_men
-    
-    def get_eligible_men(self):
-        return self.eligible_men
-    
-    def get_infantry_divisions(self):
-        return self.infantry_divisions
-    
-    def get_armored_divisions(self):
-        return self.armored_divisions
-    
-    def get_proportions(self):
-        return self.porportions
-    
-    def set_country_name(self, country_name):
-        self.country_name = country_name
-
-    def set_country_tag(self, country_tag):
-        self.country_tag = country_tag
-    
-    def set_population(self, population):
-        if population > 0:
-            self.population = population
-        else:
-            self.population = 0
     
     def set_conscription_law(self, conscription_law):
-        if conscription_law >= 0 and conscription_law <= 5:
+        if conscription_law >= 0 and conscription_law <= 1:
             self.conscription_law = conscription_law
             self.eligible_men = self.population * self.conscription_law
         else:
@@ -143,24 +56,6 @@ class Country:
             
         else:
             self.num_of_cities = 0
-    
-    def set_production_coefficient(self, production_coefficient):
-        if production_coefficient > 0:
-            self.production_coefficient = production_coefficient
-        else:
-            self.production_coefficient = 0
-    
-    def set_attrition_coefficient(self, attrition_coefficient):
-        if attrition_coefficient > 0:
-            self.attrition_coefficient = attrition_coefficient
-        else:
-            self.attrition_coefficient = 0
-    
-    def set_population_per_city(self, population_per_city):
-        if population_per_city > 0:
-            self.population_per_city = population_per_city
-        else:
-            self.population_per_city = 0
 
     def find_avaliable_unit_number(self, unit_type):
         if unit_type == "infantry":
@@ -236,10 +131,10 @@ class Country:
 
             unit = self.infantry_divisions[unit_number]
 
-            previous_manpower = unit.get_deployed_manpower()
-            previous_artillery = unit.get_deployed_artillery()
-            previous_anti_tank = unit.get_deployed_anti_tank()
-            previous_machine_guns = unit.get_deployed_machine_guns()
+            previous_manpower = unit.deployed_manpower
+            previous_artillery = unit.deployed_artillery
+            previous_anti_tank = unit.deployed_anti_tank
+            previous_machine_guns = unit.deployed_machine_guns
 
             current_manpower = remaining_equipment_list[0]
             current_artillery = remaining_equipment_list[1]
@@ -253,21 +148,21 @@ class Country:
 
             self.population -= previous_manpower - current_manpower
 
-            unit.set_manpower(unit.get_manpower() + current_manpower)
-            unit.set_artillery(unit.get_artillery() + current_artillery)
-            unit.set_anti_tank(unit.get_anti_tank() + current_anti_tank)
-            unit.set_machine_guns(unit.get_machine_guns() + current_machine_guns)
+            unit.manpower = (unit.manpower + current_manpower)
+            unit.artillery = (unit.artillery + current_artillery)
+            unit.anti_tank = (unit.anti_tank + current_anti_tank)
+            unit.machine_guns = (unit.machine_guns + current_machine_guns)
 
-            if unit.get_manpower() == 0:
+            if unit.manpower == 0:
                 self.delete_unit(unit_number, unit_type)
 
         elif unit_type == "armored":
             
             unit = self.armored_divisions[unit_number]
 
-            previous_manpower = unit.get_deployed_manpower()
-            previous_tanks = unit.get_deployed_tanks()
-            previous_motorized = unit.get_deployed_motorized()
+            previous_manpower = unit.deployed_manpower
+            previous_tanks = unit.deployed_tanks
+            previous_motorized = unit.deployed_motorized
 
             current_manpower = remaining_equipment_list[0]
             current_tanks = remaining_equipment_list[4]
@@ -279,30 +174,30 @@ class Country:
 
             self.population -= previous_manpower - current_manpower
 
-            unit.set_manpower(unit.get_manpower() + current_manpower)
-            unit.set_tanks(unit.get_tanks() + current_tanks)
-            unit.set_motorized(unit.get_motorized() + current_motorized)
+            unit.manpower(unit.manpower + current_manpower)
+            unit.tanks(unit.tanks + current_tanks)
+            unit.motorized(unit.motorized + current_motorized)
 
-            if unit.get_manpower() == 0:
+            if unit.manpower == 0:
                 self.delete_unit(unit_number, unit_type)
 
     def change_unit_status(self, unit_number, unit_type):
         if unit_type == "infantry":
             unit = self.infantry_divisions[unit_number]
-            unit.set_incirclement(not unit.get_incirclement())
+            unit.incirclement(not unit.incirclement)
         elif unit_type == "armored":
             unit = self.armored_divisions[unit_number]
-            unit.set_incirclement(not unit.get_incirclement())
+            unit.incirclement(not unit.incirclement)
     
     def understrength_units_exist(self, unit_type):
         if unit_type == "infantry":
             for unit_number in self.infantry_divisions:
-                if self.infantry_divisions[unit_number].get_manpower() < 100 or self.infantry_divisions[unit_number].get_artillery() < 3 or self.infantry_divisions[unit_number].get_machine_guns() < 2 or self.infantry_divisions[unit_number].get_anti_tank() < 2:
+                if self.infantry_divisions[unit_number].manpower < 100 or self.infantry_divisions[unit_number].artillery < 3 or self.infantry_divisions[unit_number].machine_guns < 2 or self.infantry_divisions[unit_number].anti_tank < 2:
                     return True
             return False
         elif unit_type == "armored":
             for unit_number in self.armored_divisions:
-                if self.armored_divisions[unit_number].get_manpower() < 60 or self.armored_divisions[unit_number].get_tanks() < 6 or self.armored_divisions[unit_number].get_motorized() < 5:
+                if self.armored_divisions[unit_number].manpower < 60 or self.armored_divisions[unit_number].tanks < 6 or self.armored_divisions[unit_number].motorized < 5:
                     return True
             return False
 
@@ -315,17 +210,17 @@ class Country:
         motorized_gap = 0
 
         for unit in self.infantry_divisions.values():
-            if unit.get_incirclement() == False:
-                men_gap += 100 - unit.get_manpower()
-                artillery_gap += 3 - unit.get_artillery()
-                anti_tank_gap += 2 - unit.get_anti_tank()
-                machine_gun_gap += 2 - unit.get_machine_guns()
+            if unit.incirclement == False:
+                men_gap += 100 - unit.manpower
+                artillery_gap += 3 - unit.artillery
+                anti_tank_gap += 2 - unit.anti_tank
+                machine_gun_gap += 2 - unit.machine_guns
         
         for unit in self.armored_divisions.values():
-            if unit.get_incirclement() == False:
-                men_gap += 60 - unit.get_manpower()
-                tanks_gap += 6 - unit.get_tanks()
-                motorized_gap += 5 - unit.get_motorized()
+            if unit.incirclement == False:
+                men_gap += 60 - unit.manpower
+                tanks_gap += 6 - unit.tanks
+                motorized_gap += 5 - unit.motorized
 
         if (men_gap>0 and men>0) or (artillery_gap>0 and artillery>0) or (anti_tank_gap>0 and anti_tank>0) or (machine_gun_gap>0 and machine_gun>0) or (tanks_gap>0 and tanks>0) or (motorized_gap>0 and motorized>0):
             return True
@@ -353,38 +248,38 @@ class Country:
 
         while self.understrength_units_exist("armored") and self.resupply_is_possible(replacement_manpower,replacement_artillery, replacement_anti_tank, replacement_machine_guns, replacement_tanks, replacement_motorized):
             for unit in self.armored_divisions.values():
-                if unit.get_incirclement() == False:
-                    if unit.get_manpower() < 60:
-                        unit.set_manpower(unit.get_manpower()+1)
+                if unit.incirclement == False:
+                    if unit.manpower < 60:
+                        unit.manpower=(unit.manpower+1)
                         replacement_manpower -= 1
 
-                    if unit.get_tanks() < 6:
-                        unit.set_tanks(unit.get_tanks()+1)
+                    if unit.tanks < 6:
+                        unit.tanks = (unit.tanks+1)
                         replacement_tanks -= 1
 
-                    if unit.get_motorized() < 5:
-                        unit.set_motorized(unit.get_motorized()+1)
+                    if unit.motorized < 5:
+                        unit.motorized = (unit.motorized+1)
                         replacement_motorized -= 1
         
         replacement_manpower += guaranteed_infantry_replacements
 
         while replacement_manpower > 0 and self.understrength_units_exist("infantry"):
             for unit in self.infantry_divisions.values():
-                if unit.get_incirclement() == False:
-                    if unit.get_manpower() < 100:
-                        unit.set_manpower(unit.get_manpower()+1)
+                if unit.incirclement == False:
+                    if unit.manpower < 100:
+                        unit.manpower = (unit.manpower+1)
                         replacement_manpower -= 1
                     
-                    if unit.get_artillery() < 3:
-                        unit.set_artillery(unit.get_artillery()+1)
+                    if unit.artillery < 3:
+                        unit.artillery = (unit.artillery+1)
                         replacement_artillery -= 1
 
-                    if unit.get_machine_guns() < 2:
-                        unit.set_machine_guns(unit.get_machine_guns()+1)
+                    if unit.machine_guns < 2:
+                        unit.machine_guns = (unit.machine_guns+1)
                         replacement_machine_guns -= 1
                     
-                    if unit.get_anti_tank() < 2:
-                        unit.set_anti_tank(unit.get_anti_tank()+1)
+                    if unit.anti_tank < 2:
+                        unit.anti_tank = (unit.anti_tank+1)
                         replacement_anti_tank -= 1
 
         self.trained_men = replacement_manpower
@@ -397,9 +292,9 @@ class Country:
     def find_army_size(self):
         army_size = 0
         for unit in self.infantry_divisions.values():
-            army_size += unit.get_manpower()
+            army_size += unit.manpower
         for unit in self.armored_divisions.values():
-            army_size += unit.get_manpower()
+            army_size += unit.manpower
         return army_size
 
     def train_men(self):
@@ -419,30 +314,30 @@ class Country:
             if random_number > 60:
                 random_number = random.randint(1,10)
                 if random_number<2:
-                    unit.set_artillery(unit.get_artillery()-1)
-                    unit.set_machine_guns(unit.get_machine_guns()-1)
-                    unit.set_anti_tank(unit.get_anti_tank()-1)
+                    unit.artillery = (unit.artillery-1)
+                    unit.machine_guns = (unit.machine_guns-1)
+                    unit.anti_tank = (unit.anti_tank-1)
 
                     self.artillery_losses+=1
                     self.machine_guns_losses+=1
                     self.anti_tank_losses+=1
                 
                 elif random_number<4 and random_number >=2:
-                    unit.set_machine_guns(unit.get_machine_guns()-1)
-                    unit.set_anti_tank(unit.get_anti_tank()-1)
+                    unit.machine_guns = (unit.machine_guns-1)
+                    unit.anti_tank = (unit.anti_tank-1)
 
                     self.machine_guns_losses+=1
                     self.anti_tank_losses+=1
                 
                 elif random_number<6 and random_number >=4:
-                    unit.set_artillery(unit.get_artillery()-1)
-                    unit.set_machine_guns(unit.get_machine_guns()-1)
+                    unit.artillery = (unit.artillery-1)
+                    unit.machine_guns = (unit.machine_guns-1)
 
                     self.artillery_losses+=1
                     self.machine_guns_losses+=1
 
                 elif random_number<8 and random_number >=6:
-                    unit.set_artillery(unit.get_artillery()-1)
+                    unit.artillery = (unit.artillery-1)
 
                     self.artillery_losses+=1
 
@@ -454,28 +349,28 @@ class Country:
             if random_number > 60:
                 random_number = random.randint(1,10)
                 if random_number<2:
-                    unit.set_tanks(unit.get_tanks()-2)
-                    unit.set_motorized(unit.get_motorized()-2)
+                    unit.tanks = (unit.tanks-2)
+                    unit.motorized = (unit.motorized-2)
 
                     self.tanks_losses+=2
                     self.motorized_losses+=2
                 
                 elif random_number<4 and random_number >=2:
-                    unit.set_tanks(unit.get_tanks()-2)
-                    unit.set_motorized(unit.get_motorized()-1)
+                    unit.tanks = (unit.tanks-2)
+                    unit.motorized = (unit.motorized-1)
 
                     self.tanks_losses+=2
                     self.motorized_losses+=1
                 
                 elif random_number<6 and random_number >=4:
-                    unit.set_tanks(unit.get_tanks()-1)
-                    unit.set_motorized(unit.get_motorized()-1)
+                    unit.tanks = (unit.tanks-1)
+                    unit.motorized = (unit.motorized-1)
 
                     self.tanks_losses+=1
                     self.motorized_losses+=1
 
                 elif random_number<8 and random_number >=6:
-                    unit.set_tanks(unit.get_tanks()-1)
+                    unit.tanks = (unit.tanks-1)
 
                     self.tanks_losses+=1
 
@@ -484,11 +379,11 @@ class Country:
 
     def run_production(self):
         random_number = random.randint(1,3)
-        self.surplus_artillery += round(self.get_proportions()['artillery'] * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
-        self.surplus_anti_tank += round(self.get_proportions()['anti_tank'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_machine_guns += round(self.get_proportions()['machine_guns'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_tanks += round(self.get_proportions()['tanks'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_motorized += round(self.get_proportions()['motorized'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
+        self.surplus_artillery += round(self.proportions['artillery'] * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
+        self.surplus_anti_tank += round(self.proportions['anti_tank'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_machine_guns += round(self.proportions['machine_guns'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_tanks += round(self.proportions['tanks'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_motorized += round(self.proportions['motorized'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
 
     def next_turn(self):
 

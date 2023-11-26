@@ -68,7 +68,7 @@ class World:
 
             unit = self.country_map[country_tag].get_unit(unit_number, unit_type)
             units_object_list.append(unit)
-            country_names.append(self.country_map[country_tag].get_country_name())
+            country_names.append(self.country_map[country_tag].country_name)
 
             print(unit)
             fit_for_battle = input("Is this unit fit for battle? (Y/N): ")
@@ -94,34 +94,34 @@ class World:
     def process_casualties(self, unit_list, defending):
         total_losses = [0,0,0,0,0,0]
         for unit in unit_list:
-            country = self.country_map[unit.get_country_tag()]
-            unit_number = unit.get_unit_number()
-            unit_type = unit.get_unit_type()
+            country = self.country_map[unit.country_tag]
+            unit_number = unit.unit_number
+            unit_type = unit.unit_type
 
-            print(f"For the {unit.get_nationality()} {unit.get_unit_number()}{self.get_suffix(unit_number)} {unit.get_unit_type()} Division")
+            print(f"For the {unit.nationality} {unit.unit_number}{self.get_suffix(unit_number)} {unit.unit_type} Division")
             remaining_men=int(input("how many men remain: "))
-            total_losses[0]+= unit.get_deployed_manpower()-remaining_men
-            if unit.get_unit_type().upper() == "ARMORED":
+            total_losses[0]+= unit.deployed_manpower-remaining_men
+            if unit.unit_type.upper() == "ARMORED":
                 remaining_tanks=int(input("how many tanks remain: "))
                 remaining_motorized=int(input("how many motorized remain: "))
 
                 
-                total_losses[4]+= unit.get_deployed_tanks()-remaining_tanks
-                total_losses[5]+= unit.get_deployed_motorized()-remaining_motorized
+                total_losses[4]+= unit.deployed_tanks-remaining_tanks
+                total_losses[5]+= unit.deployed_motorized-remaining_motorized
 
 
                 equipment_list = (remaining_men, 0, 0, 0, remaining_tanks, remaining_motorized)
                 country.take_casualties(unit_number, unit_type, equipment_list)
                              
 
-            if unit.get_unit_type().upper() == "INFANTRY":
+            if unit.unit_type.upper() == "INFANTRY":
                 remaining_artillery=int(input("how many artillery remain: "))
                 remaining_machine_guns=int(input("how many machine guns remain: "))
                 remaining_anti_tank=int(input("how many anti tank remain: "))
 
-                total_losses[1]+= unit.get_deployed_artillery()-remaining_artillery
-                total_losses[2]+= unit.get_deployed_machine_guns()-remaining_machine_guns
-                total_losses[3]+= unit.get_deployed_anti_tank()-remaining_anti_tank
+                total_losses[1]+= unit.deployed_artillery-remaining_artillery
+                total_losses[2]+= unit.deployed_machine_guns-remaining_machine_guns
+                total_losses[3]+= unit.deployed_anti_tank-remaining_anti_tank
 
                 equipment_list = (remaining_men, remaining_artillery, remaining_machine_guns, remaining_anti_tank, 0, 0)
                 country.take_casualties(unit_number, unit_type, equipment_list)
@@ -129,34 +129,34 @@ class World:
             if defending:
                 incirclement = input("Is this unit now encircled? (Y/N): ")
                 if incirclement == "Y":
-                    unit.set_incirclement()
+                    unit.incirclement = True
             
         return total_losses
             
     def display_involved_units(self, unit_list):
 
         for unit in unit_list:
-            print(f"{unit.get_nationality()} {unit.get_unit_number()}{self.get_suffix(unit.get_unit_number())} {unit.get_unit_type()} Division",end=" ")
+            print(f"{unit.nationality} {unit.unit_number}{self.get_suffix(unit.unit_number)} {unit.unit_type} Division",end=" ")
 
-            if unit.get_rear_guard():
+            if unit.rear_guard:
                 print("Performing Rear Guard Action", end=" ")
             
             print("with the following equipment:")
 
-            if unit.get_unit_type().upper() == "INFANTRY":
-                print(f"Manpower: {unit.get_deployed_manpower()}")
-                print(f"Artillery: {unit.get_deployed_artillery()}")
-                print(f"Machine Guns: {unit.get_deployed_machine_guns()}")
-                print(f"Anti Tank: {unit.get_deployed_anti_tank()}")
+            if unit.unit_type.upper() == "INFANTRY":
+                print(f"Manpower: {unit.deployed_manpower}")
+                print(f"Artillery: {unit.deployed_artillery}")
+                print(f"Machine Guns: {unit.deployed_machine_guns}")
+                print(f"Anti Tank: {unit.deployed_anti_tank}")
             
-            if unit.get_unit_type().upper() == "ARMORED":
-                print(f"Manpower: {unit.get_deployed_manpower()}")
-                print(f"Tanks: {unit.get_deployed_tanks()}")
-                print(f"Motorized: {unit.get_deployed_motorized()}")
+            if unit.unit_type.upper() == "ARMORED":
+                print(f"Manpower: {unit.deployed_manpower}")
+                print(f"Tanks: {unit.deployed_tanks}")
+                print(f"Motorized: {unit.deployed_motorized}")
 
-            print(f"Veterancy: {unit.get_veterancy()}")
+            print(f"Veterancy: {unit.veterancy}")
 
-            if unit.get_incirclement():
+            if unit.incirclement:
                 print("This unit is encircled, upon defeat it will be its final battle")
             
             print()
@@ -275,7 +275,7 @@ class World:
         
         while True:   
             country = self.country_map[country_tag]
-            print(f"[{country.get_country_name()}]\n\n1. View Units\n2. View Production\n3. View Country Statistics\n4. View Stockpile\n5. View Losses\n6. Return to Main Menu\n")
+            print(f"[{country.country_name}]\n\n1. View Units\n2. View Production\n3. View Country Statistics\n4. View Stockpile\n5. View Losses\n6. Return to Main Menu\n")
             choice = input("Enter choice: ")
             if choice == "1":
                 self.enter_unit_menu(country)
@@ -303,18 +303,18 @@ class World:
 
     def enter_unit_menu(self, country):
         while True:
-            print(f"[{country.get_country_name()} Unit Menu]")
+            print(f"[{country.country_name} Unit Menu]")
             print("1. View Infantry\n2. View Armored\n3. Make New Unit\n4. Delete unit\n5. Return to Country Menu\n")
             choice = input("Enter choice: ")
             if choice.startswith("1"):
-                infantry = country.get_infantry_divisions()
+                infantry = country.infantry_divisions
                 for unit in infantry:
                     print(infantry[unit],"\n")
                 if choice == "1d":
                     self.developer_settings(infantry, "infantry")
                     
             elif choice.startswith("2"):
-                armored = country.get_armored_divisions()
+                armored = country.armored_divisions
                 for unit in armored:
                     print(armored[unit],"\n")
                 if choice == "2d":
@@ -351,29 +351,28 @@ class World:
     
     def modify_unit(self, unit, type):
         if type == "infantry":
-            unit.set_manpower(int(input("Enter manpower: ")))
-            unit.set_artillery(int(input("Enter artillery: ")))
-            unit.set_machine_guns(int(input("Enter machine guns: ")))
-            unit.set_anti_tank(int(input("Enter anti tank: ")))
-            unit.set_veterancy(int(input("Enter veterancy: ")))
+            unit.manpower = (int(input("Enter manpower: ")))
+            unit.artillery = (int(input("Enter artillery: ")))
+            unit.machine_guns = (int(input("Enter machine guns: ")))
+            unit.anti_tank = (int(input("Enter anti tank: ")))
+            unit.veterancy = (int(input("Enter veterancy: ")))
         elif type == "armored":
-            unit.set_manpower(int(input("Enter manpower: ")))
-            unit.set_tanks(int(input("Enter tanks: ")))
-            unit.set_motorized(int(input("Enter motorized: ")))
-            unit.set_veterancy(int(input("Enter veterancy: ")))
+            unit.manpower = (int(input("Enter manpower: ")))
+            unit.tanks = (int(input("Enter tanks: ")))
+            unit.motorized = (int(input("Enter motorized: ")))
+            unit.veterancy = (int(input("Enter veterancy: ")))
 
-    ##TODO:
     def enter_production_menu(self, country):
         while True:
-            print(f"[{country.get_country_name()} Production Menu]\n\n1. View Production\n2. Modify Production\n3. Return to Country Menu\n")
+            print(f"[{country.country_name} Production Menu]\n\n1. View Production\n2. Modify Production\n3. Return to Country Menu\n")
             choice = input("Enter choice: ")
             if choice == "1":
                 print("Estimated Production of Equipment: (proportion --> estimated production))")
-                print(f"Artillery: {country.get_proportions()['artillery']} ---> {self.calculate_estimated_production_of_equipment('artillery', country)}")
-                print(f"Machine Guns: {country.get_proportions()['machine_guns']} ---> {self.calculate_estimated_production_of_equipment('machine guns', country)}")
-                print(f"Anti Tank: {country.get_proportions()['anti_tank']} ---> {self.calculate_estimated_production_of_equipment('anti tank', country)}")
-                print(f"Tanks: {country.get_proportions()['tanks']} ---> {self.calculate_estimated_production_of_equipment('tanks', country)}")
-                print(f"Motorized: {country.get_proportions()['motorized']} ---> {self.calculate_estimated_production_of_equipment('motorized', country)}\n")
+                print(f"Artillery: {country.porportions['artillery']} ---> {self.calculate_estimated_production_of_equipment('artillery', country)}")
+                print(f"Machine Guns: {country.porportions['machine_guns']} ---> {self.calculate_estimated_production_of_equipment('machine guns', country)}")
+                print(f"Anti Tank: {country.porportions['anti_tank']} ---> {self.calculate_estimated_production_of_equipment('anti tank', country)}")
+                print(f"Tanks: {country.porportions['tanks']} ---> {self.calculate_estimated_production_of_equipment('tanks', country)}")
+                print(f"Motorized: {country.porportions['motorized']} ---> {self.calculate_estimated_production_of_equipment('motorized', country)}\n")
             elif choice == "2":
                 print("Enter the proportion of production you want to reallocate to an equipment type and where you want to reallocate it from. ex. 1-artillery-machine_guns where 1 is the proportion of production you want to reallocate to artillery from machine guns")
                 change = input("Enter change: ")
@@ -381,18 +380,18 @@ class World:
                 proportion = float(change[0])
                 equipment_to = change[1]
                 equipment_from = change[2]
-                country.get_proportions()[equipment_to] += proportion
-                country.get_proportions()[equipment_from] -= proportion
+                country.porportions[equipment_to] += proportion
+                country.porportions[equipment_from] -= proportion
 
 
             elif choice == "3":
                 break
 
     def calculate_estimated_production_of_equipment(self, equipment, country):
-        population = country.get_population()
-        production_coefficient = country.get_production_coefficient()
-        num_of_cities = country.get_num_of_cities()
-        conscription_law = country.get_conscription_law()
+        population = country.population
+        production_coefficient = country.production_coefficient
+        num_of_cities = country.num_of_cities
+        conscription_law = country.conscription_law
 
         if equipment == "artillery":
             return round(24 * population * production_coefficient * num_of_cities *(1-conscription_law)) * 2
@@ -407,32 +406,27 @@ class World:
 
     def enter_country_statistics_menu(self, country):
         while True:
-            print(f"""[{country.get_country_name()}]\n\n
-Country Name:{country.get_country_name()}
-Country Tag:{country.get_country_tag()}
-Population: {country.get_population()}
-Number of Cities: {country.get_num_of_cities()}
-Population per City:{country.get_population_per_city()}
-Production Coefficient: {country.get_production_coefficient()} 
-Attrition Coefficient: {country.get_attrition_coefficient()}
-Surplus Artillery: {country.get_surplus_artillery()}
-Surplus Anti Tank: {country.get_surplus_anti_tank()}
-Surplus Machine Guns: {country.get_surplus_machine_guns()}
-Surplus Tanks: {country.get_surplus_tanks()}
-Surplus Motorized: {country.get_surplus_motorized()}
-Conscription Law: {country.get_conscription_law()}
-Trained Men: {country.get_trained_men()}
-Eligible Men: {country.get_eligible_men()}
+            print(f"""[{country.country_name}]\n\n
+Country Name:{country.country_name}
+Country Tag:{country.country_tag}
+Population: {country.population}
+Number of Cities: {country.num_of_cities}
+Population per City:{country.population_per_city}
+Production Coefficient: {country.production_coefficient} 
+Attrition Coefficient: {country.attrition_coefficient}
+Conscription Law: {country.conscription_law}
+Trained Men: {country.trained_men}
+Eligible Men: {country.eligible_men}
                 """)
             print("1. Modify City Count\n2. Modify Production Coefficent\n3. Modify Attrition Coefficent\n4. Modify Conscription Law\n5. Return to Country Menu\n")
             choice=input("Enter Command: ")
             if choice == "1":
-                country.set_num_of_cities(country.get_num_of_cities()-int(input("Enter number of cities lost: ")))
-                print(f"New number of cities: {country.get_num_of_cities()}")
+                country.set_num_of_cities(country.num_of_cities-int(input("Enter number of cities lost: ")))
+                print(f"New number of cities: {country.num_of_cities}")
             elif choice == "2":
-                country.set_production_coefficient(float(input("Enter new production coefficient as a decimal [0,10]: "))*(10**-8))
+                country.production_coefficient = (float(input("Enter new production coefficient as a decimal [0,10]: "))*(10**-8))
             elif choice == "3":
-                country.set_attrition_coefficient(float(input("Enter new attrition coefficient as a decimal [0,1]: ")))
+                country.attrition_coefficient = (float(input("Enter new attrition coefficient as a decimal [0,1]: ")))
             elif choice == "4":
                 country.set_conscription_law(float(input("Enter new conscription law as a decimal [0,1]: ")))
             elif choice == "5":
@@ -441,7 +435,41 @@ Eligible Men: {country.get_eligible_men()}
 
     ##TODO:
     def enter_stockpile_menu(self, country):
-        pass
+        while True:
+            print(f"""[Stockpile Menu]\n\n
+Surplus Artillery: {country.surplus_artillery}
+Surplus Anti Tank: {country.surplus_anti_tank}
+Surplus Machine Guns: {country.surplus_machine_guns}
+Surplus Tanks: {country.surplus_tanks}
+Surplus Motorized: {country.surplus_motorized}              
+            """)
+            print("To send equipment to another country enter the equipment type, amount, and the country tag. ex. artillery.100.ENG")
+            print("1. Send Equipment\n2. Return to Country Menu\n")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                equipment = input("Enter equipment: ")
+                equipment = equipment.split(".")
+                equipment_type = equipment[0]
+                equipment_amount = int(equipment[1])
+                equipment_country_tag = equipment[2]
+                if equipment_type == "artillery":
+                    country.surplus_artillery = (country.surplus_artillery-equipment_amount)
+                    self.country_map[equipment_country_tag].surplus_artillery = (self.country_map[equipment_country_tag].surplus_artillery+equipment_amount)
+                elif equipment_type == "anti_tank":
+                    country.surplus_anti_tank = (country.surplus_anti_tank-equipment_amount)
+                    self.country_map[equipment_country_tag].surplus_anti_tank = (self.country_map[equipment_country_tag].surplus_anti_tank+equipment_amount)
+                elif equipment_type == "machine_guns":
+                    country.surplus_machine_guns = (country.surplus_machine_guns-equipment_amount)
+                    self.country_map[equipment_country_tag].surplus_machine_guns = (self.country_map[equipment_country_tag].surplus_machine_guns+equipment_amount)
+                elif equipment_type == "tanks":
+                    country.surplus_tanks = (country.surplus_tanks-equipment_amount)
+                    self.country_map[equipment_country_tag].surplus_tanks = (self.country_map[equipment_country_tag].surplus_tanks+equipment_amount)
+                elif equipment_type == "motorized":
+                    country.surplus_motorized = (country.surplus_motorized-equipment_amount)
+                    self.country_map[equipment_country_tag].surplus_motorized = (self.country_map[equipment_country_tag].get_surplus_motorized+equipment_amount)
+            elif choice == "2":
+                break
+        
 
     ##TODO:
     def enter_losses_menu(self, country):

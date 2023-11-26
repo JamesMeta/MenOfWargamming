@@ -11,43 +11,7 @@ class Infantry(Unit):
         self.deployed_machine_guns = 0
         self.deployed_anti_tank = 0
 
-        self.type = "Infantry"
-    
-    def get_artillery(self):
-        return self.artillery
-    
-    def get_machine_guns(self):
-        return self.machine_guns
-    
-    def get_anti_tank(self):
-        return self.anti_tank
-    
-    def get_deployed_artillery(self):
-        return self.deployed_artillery
-    
-    def get_deployed_machine_guns(self):
-        return self.deployed_machine_guns
-    
-    def get_deployed_anti_tank(self):
-        return self.deployed_anti_tank
-
-    def set_artillery(self, artillery):
-        if artillery > 0:
-            self.artillery = artillery
-        else:
-            self.artillery = 0
-    
-    def set_machine_guns(self, machine_guns):
-        if machine_guns > 0:
-            self.machine_guns = machine_guns
-        else:
-            self.machine_guns = 0
-    
-    def set_anti_tank(self, anti_tank):
-        if anti_tank > 0:
-            self.anti_tank = anti_tank
-        else:
-            self.anti_tank = 0
+        self.unit_type = "Infantry"
 
     def set_deployed_artillery(self, deployed_artillery):
         if deployed_artillery > 0:
