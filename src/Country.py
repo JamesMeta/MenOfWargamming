@@ -141,10 +141,10 @@ class Country:
             current_machine_guns = remaining_equipment_list[2]
             current_anti_tank = remaining_equipment_list[3]
 
-            self.manpower_losses+= previous_manpower - current_manpower
-            self.anti_tank_losses+= previous_anti_tank - current_anti_tank
-            self.artillery_losses+= previous_artillery - current_artillery
-            self.machine_guns_losses+= previous_machine_guns - current_machine_guns
+            self.manpower_losses += previous_manpower - current_manpower
+            self.anti_tank_losses += previous_anti_tank - current_anti_tank
+            self.artillery_losses += previous_artillery - current_artillery
+            self.machine_guns_losses += previous_machine_guns - current_machine_guns
 
             self.population -= previous_manpower - current_manpower
 
@@ -379,11 +379,11 @@ class Country:
 
     def run_production(self):
         random_number = random.randint(1,3)
-        self.surplus_artillery += round(self.proportions['artillery'] * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
-        self.surplus_anti_tank += round(self.proportions['anti_tank'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_machine_guns += round(self.proportions['machine_guns'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_tanks += round(self.proportions['tanks'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
-        self.surplus_motorized += round(self.proportions['motorized'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
+        self.surplus_artillery += round(self.porportions['artillery'] * self.population * self.production_coefficient * self.num_of_cities *(1-self.conscription_law)) * random_number
+        self.surplus_anti_tank += round(self.porportions['anti_tank'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_machine_guns += round(self.porportions['machine_guns'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_tanks += round(self.porportions['tanks'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number
+        self.surplus_motorized += round(self.porportions['motorized'] * self.population * self.production_coefficient * self.num_of_cities*(1-self.conscription_law)) * random_number            
 
     def next_turn(self):
 

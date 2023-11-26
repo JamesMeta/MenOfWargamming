@@ -1,5 +1,9 @@
 from Country import Country
 from Statistics import Statistics
+import os
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
 
 class World:
     def __init__(self):
@@ -275,18 +279,23 @@ class World:
         
         while True:   
             country = self.country_map[country_tag]
-            print(f"[{country.country_name}]\n\n1. View Units\n2. View Production\n3. View Country Statistics\n4. View Stockpile\n5. View Losses\n6. Return to Main Menu\n")
+            print(f"[{country.country_name}]\n\n1. View Unit Menu\n2. View Production Menu\n3. View Country Statistics Menu\n4. View Stockpile Menu\n5. View Losses Menu\n6. Return to Main Menu\n")
             choice = input("Enter choice: ")
             if choice == "1":
                 self.enter_unit_menu(country)
+                clear()
             elif choice == "2":
                 self.enter_production_menu(country)
+                clear()
             elif choice == "3":
                 self.enter_country_statistics_menu(country)
+                clear()
             elif choice == "4":
                 self.enter_stockpile_menu(country)
+                clear()
             elif choice == "5":
                 self.enter_losses_menu(country)
+                clear()
             elif choice == "6":
                 break
 
@@ -433,7 +442,6 @@ Eligible Men: {country.eligible_men}
                 break
             
 
-    ##TODO:
     def enter_stockpile_menu(self, country):
         while True:
             print(f"""[Stockpile Menu]\n\n
@@ -470,15 +478,23 @@ Surplus Motorized: {country.surplus_motorized}
             elif choice == "2":
                 break
         
-
-    ##TODO:
     def enter_losses_menu(self, country):
-        pass
+        while True:
+            print(f"""[Losses Menu]\n\n
+Manpower Losses: {country.manpower_losses}
+Artillery Losses: {country.artillery_losses}
+Anti Tank Losses: {country.anti_tank_losses}
+Machine Guns Losses: {country.machine_guns_losses}
+Tanks Losses: {country.tanks_losses}
+Motorized Losses: {country.motorized_losses}
+            """)
+            print("1. Return to Country Menu\n")
+            choice = input("Enter choice: ")
+            if choice == "1":
+                break
 
-    ##TODO:
     def next_turn(self):
-        pass
+        self.statistics.next_turn()
+        for country_tag in self.country_map:
+            self.country_map[country_tag].next_turn()
 
-    ##TODO:
-    def save_game(self):
-        pass
