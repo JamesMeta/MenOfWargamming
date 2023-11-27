@@ -11,7 +11,7 @@ class Infantry(Unit):
         self.deployed_machine_guns = 0
         self.deployed_anti_tank = 0
 
-        self.unit_type = "Infantry"
+        self.unit_type = "infantry"
 
     def set_deployed_artillery(self, deployed_artillery):
         if deployed_artillery > 0:

@@ -9,7 +9,7 @@ class Armored(Unit):
         self.deployed_tanks = 0
         self.deployed_motorized = 0
 
-        self.unit_type = "Armored"
+        self.unit_type = "armored"
     
     def set_deployed_tanks(self, deployed_tanks):
         self.deployed_tanks = deployed_tanks

@@ -18,12 +18,17 @@ def on_load():
     return world
 
 def main():
+
     if os.path.exists('game_data.pkl'):
-        print("Save file found, loading...")
-        world = on_load()
-    else:
-        world = World()
-        world.start_game("D")
+        choice = input("Save file found, would you like to load it? (y/n): ")
+        if choice == "y":
+            print("Save file found, loading...")
+            world = on_load()
+        else:    
+            world = World()
+            world.start_game("D")
+            clear()
+
     while True:
         print("Possible Commands:\ncountry menu <country>\nstart battle\nstatistics menu\nnext turn\nexit\nsave\n")
         command = input("Enter command: ")

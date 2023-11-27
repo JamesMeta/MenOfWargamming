@@ -124,6 +124,7 @@ class Country:
             del self.armored_divisions[unit_number]
         
         print(f"Deleted {unit_type} Division {unit_number} for {self.country_name}")
+        input("Press Enter to continue...")
 
     #remaining equipment list structure [men, artillery, machine_guns, anti_tank, tanks, motorized]
     def take_casualties(self, unit_number, unit_type, remaining_equipment_list):
@@ -146,7 +147,6 @@ class Country:
             self.artillery_losses += previous_artillery - current_artillery
             self.machine_guns_losses += previous_machine_guns - current_machine_guns
 
-            self.population -= previous_manpower - current_manpower
 
             unit.manpower = (unit.manpower + current_manpower)
             unit.artillery = (unit.artillery + current_artillery)
@@ -172,11 +172,10 @@ class Country:
             self.tanks_losses+= previous_tanks - current_tanks
             self.motorized_losses+= previous_motorized - current_motorized
 
-            self.population -= previous_manpower - current_manpower
 
-            unit.manpower(unit.manpower + current_manpower)
-            unit.tanks(unit.tanks + current_tanks)
-            unit.motorized(unit.motorized + current_motorized)
+            unit.manpower = (unit.manpower + current_manpower)
+            unit.tanks = (unit.tanks + current_tanks)
+            unit.motorized = (unit.motorized + current_motorized)
 
             if unit.manpower == 0:
                 self.delete_unit(unit_number, unit_type)

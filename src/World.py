@@ -3,7 +3,8 @@ from Statistics import Statistics
 import os
 
 def clear():
-    os.system("cls" if os.name == "nt" else "clear")
+    #os.system("cls" if os.name == "nt" else "clear")
+    pass
 
 class World:
     def __init__(self):
@@ -273,8 +274,9 @@ class World:
         print("Post battle statistics:")
         print(battle)
         self.end_of_battle_update(attacking_units_object_list, defending_units_object_list)
+        input("Press enter to continue...")
 
-    ##TODO:
+
     def enter_country_menu(self, country_tag):
         
         while True:   
