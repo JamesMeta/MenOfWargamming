@@ -3,7 +3,7 @@ from Statistics import Statistics
 import os
 
 def clear():
-    #os.system("cls" if os.name == "nt" else "clear")
+    os.system("cls" if os.name == "nt" else "clear")
     pass
 
 class World:
@@ -493,6 +493,43 @@ Motorized Losses: {country.motorized_losses}
             print("1. Return to Country Menu\n")
             choice = input("Enter choice: ")
             if choice == "1":
+                break
+
+    def enter_statistics_menu(self):
+        while True:
+            print(f"""[Statistics Menu]\n\n
+1. View Battles\n2. View Graphs\n3. Return to Main Menu\n
+            """)
+            choice = input("Enter choice: ")
+            
+            if choice == "1":
+                battle_list = self.statistics.battle_list
+
+                for battle in battle_list:
+                    print(battle.battle_name)
+
+                battle_name = input("Enter battle name: ")
+                battle = self.statistics.get_battle(battle_name)
+
+                print(battle)
+                input("Press enter to continue...")
+
+            elif choice == "2":
+                while True:
+                    print(f"""[Graphs Menu]\n\n
+1. View Stockpile Graphs for all Countries\n2. View Equipment Losses for all Countries\n3. View Manpower Losses for all Countries\n4. Return to Statistics Menu
+                            """)
+                    choice = input("Enter choice: ")
+                    if choice == "1":
+                        self.statistics.graph_stockpile_for_all_countries()
+                    elif choice == "2":
+                        self.statistics.graph_equipment_losses_for_all()
+                    elif choice == "3":
+                        self.statistics.graph_manpower_losses_for_all()
+                    elif choice == "4":
+                        break
+
+            elif choice == "3":
                 break
 
     def next_turn(self):

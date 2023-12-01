@@ -32,6 +32,11 @@ class Statistics:
 
         return battle
 
+    def get_battle(self, battle_name):
+        for battle in self.battle_list:
+            if battle.battle_name == battle_name:
+                return battle
+
     def next_turn(self):
         for country_tag in self.country_map:
             self.country_manpower_losses_map[country_tag].append(self.country_map[country_tag].manpower_losses)
@@ -53,16 +58,20 @@ class Statistics:
         plt.show()
 
     def graph_equipment_losses_for_all(self):
-        for country_tag in self.country_map:
+        for country_tag in self.country_map.keys():
             losses_array = self.country_equipment_losses_map[country_tag]
             country = self.country_map[country_tag]
             plt.plot(losses_array, color=country.country_colour, label=country.country_name)
+        plt.xlabel('Weeks')
+        plt.show()
 
     def graph_manpower_losses_for_all(self):
-        for country_tag in self.country_map:
+        for country_tag in self.country_map.keys():
             losses_array = self.country_manpower_losses_map[country_tag]
             country = self.country_map[country_tag]
             plt.plot(losses_array, color=country.country_colour, label=country.country_name)
+        plt.xlabel('Weeks')
+        plt.show()
 
     def graph_stockpile_for_country(self, country_tag):
         stockpile_array = self.country_stockpile_map[country_tag]
@@ -72,8 +81,11 @@ class Statistics:
         plt.show()
 
     def graph_stockpile_for_all_countries(self):
-        for country_tag in self.country_map:
+        for country_tag in self.country_map.keys():
             stockpile_array = self.country_stockpile_map[country_tag]
             country = self.country_map[country_tag]
             plt.plot(stockpile_array, color=country.country_colour, label=country.country_name)
+        plt.legend()
+        plt.xlabel('Weeks')
+        plt.show()
   

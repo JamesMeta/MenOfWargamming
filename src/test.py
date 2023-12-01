@@ -1,24 +1,16 @@
-class C:
-    def __init__(self):
-        self._x = None
+import matplotlib.pyplot as plt
 
-    @property
-    def x(self):
-        """I'm the 'x' property."""
-        print("getter of x called")
-        return self._x
+people = [23,44,11,22,16]
+date = [1,2,3,4,5]
 
-    @x.setter
-    def x(self, value):
-        print("setter of x called")
-        self._x = value
 
-    @x.deleter
-    def x(self):
-        print("deleter of x called")
-        del self._x
+while True:
 
-c = C()
-c.x = 'foo'  # setter called
-foo = c.x    # getter called
-del c.x      # deleter called
+    choice = input()
+    if choice == "exit":
+        break
+
+    if choice == "plot":
+        print("plotting")
+        plt.plot(date, people)
+        plt.show()

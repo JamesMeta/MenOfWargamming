@@ -24,25 +24,29 @@ def main():
         if choice == "y":
             print("Save file found, loading...")
             world = on_load()
-        else:    
+        else:
             world = World()
             world.start_game("D")
             clear()
+    else:    
+        world = World()
+        world.start_game("D")
+        clear()
 
     while True:
-        print("Possible Commands:\ncountry menu <country>\nstart battle\nstatistics menu\nnext turn\nexit\nsave\n")
+        print("Possible Commands:\n1. Country Menu (1.country_tag)\n2. Start Battle\n3. Statistics Menu\n4. Next Turn\n5. Save\n6. Exit\n")
         command = input("Enter command: ")
-        if command.startswith("country menu"):
-            world.enter_country_menu(command.split(" ")[2])
-        if command == "start battle":
+        if command.startswith("1"):
+            world.enter_country_menu(command.split(".")[1])
+        if command == "2":
             world.start_battle()
-        if command == "statistics menu":
+        if command == "3":
             world.enter_statistics_menu()
-        if command == "next turn":
+        if command == "4":
             world.next_turn()
-        if command == "save":
+        if command == "5":
             save(world)
-        if command == "exit":
+        if command == "6":
             break
         clear()
 
