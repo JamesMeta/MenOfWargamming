@@ -2,11 +2,19 @@ from World import World
 from World import clear
 import os
 import pickle
+import shutil
 
 def save(world):
 
     serialized = pickle.dumps(world)
 
+    # moves the current save file to previous game data folder
+    if os.path.exists('game_data.pkl'):
+        if os.path.exists('previous_game_data'):
+            shutil.rmtree('previous_game_data')
+        os.mkdir('previous_game_data')
+        shutil.move('game_data.pkl', 'previous_game_data/game_data.pkl')
+    
     with open('game_data.pkl', 'wb') as file:
         file.write(serialized)
     
